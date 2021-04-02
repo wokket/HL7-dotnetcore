@@ -801,7 +801,7 @@ namespace HL7.Dotnetcore
                             }
                         }
                         else
-                            throw new HL7Exception("MSH.10 not available", HL7Exception.UNSUPPORTED_MESSAGE_TYPE);
+                            throw new HL7Exception("MSH.9 not available", HL7Exception.UNSUPPORTED_MESSAGE_TYPE);
                     }
                     catch (System.IndexOutOfRangeException e)
                     {
