@@ -56,7 +56,11 @@ foreach (var strMsg in messages)
     // do something with the message object
 }
 ````
-
+## Bypass Validation
+````cSharp
+Message  message = new Message(strMsg)
+message.ParseMessage(true);
+````
 ## Accessing Segments
 
 ### Get list of all segments

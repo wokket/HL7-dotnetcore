@@ -56,15 +56,20 @@ namespace HL7.Dotnetcore
         /// <summary>
         /// Parse the HL7 message in text format, throws HL7Exception if error occurs
         /// </summary>
+        /// <param name="bypassValidation">To parse the message without any validation</param>
         /// <returns>boolean</returns>
-        public bool ParseMessage()
+        public bool ParseMessage(bool bypassValidation = false)
         {
             bool isValid = false;
             bool isParsed = false;
 
             try
             {
-                isValid = this.validateMessage();
+                if (!bypassValidation)
+                {
+                    isValid = this.validateMessage();
+                }
+                else { isValid = true; }
             }
             catch (HL7Exception ex)
             {
