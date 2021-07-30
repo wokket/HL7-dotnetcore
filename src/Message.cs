@@ -727,7 +727,7 @@ namespace HL7.Dotnetcore
                     // Check if message starts with header segment
                     if (!HL7Message.StartsWith("MSH"))
                     {
-                        throw new HL7Exception("MSH segment not found at the beggining of the message", HL7Exception.BAD_MESSAGE);
+                        throw new HL7Exception("MSH segment not found at the beginning of the message", HL7Exception.BAD_MESSAGE);
                     }
 
                     this.Encoding.EvaluateSegmentDelimiter(this.HL7Message);
