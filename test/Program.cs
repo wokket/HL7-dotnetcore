@@ -142,6 +142,13 @@ namespace HL7.Dotnetcore.Test
         }
 
         [TestMethod]
+        public void NotEncodingTest()
+        {
+            var enc = new HL7Encoding().Encode("<1");
+            Assert.AreEqual(enc, "<1");
+        }
+
+        [TestMethod]
         public void EncodingForOutputTest()
         {
             const string oruUrl = "domain.com/resource.html?Action=1&ID=2";  // Text with special character (&)
