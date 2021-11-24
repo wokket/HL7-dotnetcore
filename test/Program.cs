@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -789,6 +790,56 @@ OBX|1|TX|SCADOCTOR||^||||||F";
             
             Assert.IsTrue(message.SetValue("PID.2.4.1", testValue), "Should have successfully set value of SubComponent");
             Assert.AreEqual(testValue, message.GetValue("PID.2.4.1"));
+        }
+
+        [TestMethod]
+        public void MessageIsComponentized()
+        {
+            string sampleMessage = this.HL7_ADT;
+            var message = new Message(sampleMessage);
+            message.ParseMessage();
+
+            Assert.IsTrue(message.IsComponentized("PID.5"));
+        }
+
+        [TestMethod]
+        public void FieldHasRepetitions()
+        {
+            string sampleMessage = this.HL7_ADT;
+            var message = new Message(sampleMessage);
+            message.ParseMessage();
+            Console.WriteLine(message.Segments("PID")[0].Fields(18).Value);
+            Assert.IsFalse(message.HasRepetitions("PID.3"));
+            //Assert.IsTrue(message.HasRepetitions("PID.18")); // Possible bug in the upstream library
+        }
+
+        [TestMethod]
+        public void SequenceNo()
+        {
+            string sampleMessage = @"MSH|^~\&|MEDAT|AESCU|IXZENT||20210714122713|MEDAT_KC|ORU^R01|6227281|P|2.3|||||||
+PID|||||Kuh^Klarabella||19901224|F|||Bogus St^^Gotham^^42069^|||||||||||||
+PV1||2|Jenkins||||||||||||||||AP0999923||P|||||||
+ORC||0490000001|0490000001||CM||||202107141056
+OBR|1|0490000001|0490000001|LH^LH^FN|||202107141056|20210714122713||||||202107141056|1||||||||||F|
+OBX|1|NM|LH^LH^FN||20.00|mIU/ml|||||F||
+NTE|1||      Follikelphase:    2.4 -  12.6 mIU/ml
+NTE|2||      Ovulationsphase: 14.0 - 95.6 mIU/ml
+NTE|3||      Lutealphase:      1.0 - 11.4 mIU/ml
+NTE|4||      Postmenopause:    7.7 - 58.5 mIU/ml
+OBR|2|0490000001|0490000001|FSH^FSH^FN|||202107141056|20210714122713||||||202107141056|1||||||||||F|
+OBX|1|NM|FSH^FSH^FN||30.00|mIU/ml|||||F||
+NTE|1||      Follikelphase:    3.5 - 12.5 mIU/ml
+NTE|2||      Ovulationsphase:  4.7 - 21.5 mIU/ml
+NTE|3||      Lutealphase:       1.7 - 7.7 mIU/ml
+NTE|4||      Postmenopause:  25.8 - 134.8 mIU/ml";
+            var message = new Message(sampleMessage);
+            message.ParseMessage();
+
+            var nte = message.Segments("NTE")[0];
+            Assert.AreEqual(6, nte.GetSequenceNo());
+
+            nte = message.Segments("NTE")[4];
+            Assert.AreEqual(12, nte.GetSequenceNo());
         }
     }
 }
