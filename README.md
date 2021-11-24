@@ -8,7 +8,7 @@ This is a lightweight library for building and parsing HL7 2.x messages, for .Ne
 
 ## Object construction
 
-### Create a Message object and pass raw HL7 message in text format
+### Create a Message object and pass a raw HL7 message in text format
 
 ````cSharp
 Message message = new Message(strMsg);
@@ -37,6 +37,8 @@ message.AddSegmentMSH(sendingApplication, sendingFacility,
     security, messageType, 
     messageControlId, processingId, version);
 ````
+
+&#9888;&#65039; Notice that every HL7 message needs a header segment to be considered valid
 
 ### Message extraction
 
@@ -211,7 +213,7 @@ ack.SetValue("MSH.4", facility);
 
 ````
 
-Take into account that a message shall be previously parsed before attempting to generate an ACK or NACK message.
+&#9888;&#65039; Take into account that a message shall be previously parsed before attempting to generate an ACK or NACK message.
 
 ## Accessing Components
 
