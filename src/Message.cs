@@ -16,7 +16,7 @@ namespace HL7.Dotnetcore
         public string MessageStructure { get; set; }
         public string MessageControlID { get; set; }
         public string ProcessingID { get; set; }
-        public short SegmentCount { get; set; }
+        public int SegmentCount { get; set; }
         public HL7Encoding Encoding { get; set; } = new HL7Encoding();
 
         private const string segmentRegex = "^[A-Z][A-Z][A-Z1-9]$";
@@ -87,7 +87,7 @@ namespace HL7.Dotnetcore
                     if (this.allSegments == null || this.allSegments.Count <= 0)
                         this.allSegments = MessageHelper.SplitMessage(HL7Message);
 
-                    short SegSeqNo = 0;
+                    int segSeqNo = 0;
 
                     foreach (string strSegment in this.allSegments)
                     {
@@ -98,13 +98,13 @@ namespace HL7.Dotnetcore
                         {
                             Name = strSegment.Substring(0, 3),
                             Value = strSegment,
-                            SequenceNo = SegSeqNo++
+                            SequenceNo = segSeqNo++
                         };
 
                         this.AddNewSegment(newSegment);
                     }
 
-                    this.SegmentCount = SegSeqNo;
+                    this.SegmentCount = segSeqNo;
 
                     string strSerializedMessage = string.Empty;
 

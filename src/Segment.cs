@@ -6,7 +6,7 @@ namespace HL7.Dotnetcore
     public class Segment : MessageElement
     {
         internal FieldCollection FieldList { get; set; }
-        internal short SequenceNo { get; set; }
+        internal int SequenceNo { get; set; }
                 
         public string Name { get; set; }
 
@@ -121,7 +121,7 @@ namespace HL7.Dotnetcore
             return this.FieldList;
         }
 
-        public short GetSequenceNo()
+        public int GetSequenceNo()
         {
             return this.SequenceNo;
         }
