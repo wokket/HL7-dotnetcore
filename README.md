@@ -162,14 +162,14 @@ f.AddRepeatingField(f2);
 List<Field> repList = message.Segments("PID")[0].Fields(3).Repetitions();
 ````
 
-### Get particular repetition i.e 2nd repetition of PID.3
+### Get particular repetition i.e. 2nd repetition of PID.3
 
 ````cSharp
-Field PID3_R2 = message.Segments("PID.3[2]");
+Field PID3_R2 = message.GetValue("PID.3[2]");
 
 // OR
 
-Field PID3_R2 = message.Segments("PID.3(2)");
+Field PID3_R2 = message.GetValue("PID.3(2)");
 ````
 
 ### Update value of any field i.e. to update PV1.2 – patient class
