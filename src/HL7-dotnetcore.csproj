@@ -9,6 +9,7 @@
     <PackageTags>hl7;dotnetcore</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Efferent-Health/HL7-dotnetcore</RepositoryUrl>
+    <Configuration>Release</Configuration>    
   </PropertyGroup>
 
   <PropertyGroup>
