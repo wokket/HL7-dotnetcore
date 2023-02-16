@@ -21,9 +21,11 @@
 
   <PropertyGroup>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>    
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="../LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)" />
+    <None Include="../README.md" Pack="true" PackagePath="$(PackageReadmeFile)" />
   </ItemGroup>
 </Project>
