@@ -112,15 +112,17 @@ string SendingFacility = message.GetValue("MSH.4");
 
 // OR
 
-string SendingFacility = message.GetValue("MSH(1).4");
-
-// OR
-
 string SendingFacility = message.DefaultSegment("MSH").Fields(4).Value;
 
 // OR
 
 string SendingFacility = message.Segments("MSH")[0].Fields(4).Value;
+`````
+
+### Segment ocurrences
+
+````cSharp
+string ContactPhone = message.GetValue("NK1(2).5"); // Second occurrence of NK1
 `````
 
 ### Check if field is componentized

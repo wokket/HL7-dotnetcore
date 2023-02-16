@@ -86,7 +86,7 @@ namespace HL7.Dotnetcore.Test
         }
 
         [TestMethod]
-        public void ReadFieldTest2()
+        public void ReadFieldTestWithOccurrence()
         {
             var message = new Message(this.HL7_ADT);
             message.ParseMessage();

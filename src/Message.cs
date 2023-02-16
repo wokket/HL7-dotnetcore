@@ -219,7 +219,7 @@ namespace HL7.Dotnetcore
         public string GetValue(string strValueFormat)
         {
             string segmentName = string.Empty;
-            int segmentNumber = 0;
+            int segmentOccurrence = 0;
             int componentIndex = 0;
             int subComponentIndex = 0;
             string strValue = string.Empty;
@@ -237,14 +237,14 @@ namespace HL7.Dotnetcore
                 segmentName = matches[0].Groups[1].Value;
                 if (matches[0].Length > 3) 
                 {
-                    Int32.TryParse(matches[0].Groups[3].Value, out segmentNumber);
-                    segmentNumber--;
+                    Int32.TryParse(matches[0].Groups[3].Value, out segmentOccurrence);
+                    segmentOccurrence--;
                 }
 
                 if (SegmentList.ContainsKey(segmentName))
                 {
 
-                    var segment = SegmentList[segmentName][segmentNumber];
+                    var segment = SegmentList[segmentName][segmentOccurrence];
 
                     if (comCount == 4)
                     {
