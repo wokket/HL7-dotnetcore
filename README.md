@@ -419,7 +419,7 @@ catch
 ````
 
 ## Credits
-This is a fork from Jayant Singh's HL7 parser. Since then, it has been modified fundamentally, with respect to features, code quality, bugs and typos. 
+This is a fork from Jayant Singh's HL7 parser (2013). Since then, it has been modified fundamentally, with respect to features, code quality, bugs and typos. 
 For more information about the original implementation read:
 - https://github.com/j4jayant/hl7-cSharp-parser
 - http://j4jayant.com/articles/hl7/31-hl7-parsing-lib
@@ -431,4 +431,4 @@ Since version 2.9, the MSH segment will have an extra field at the beginning of 
 
 Since version 2.9, some previously deprecated methods starting with lowercase have been removed. The replacement methods starting with uppercase shall be used instead.
 
-Since version 2.21, message.GetValue() will decode the returned content.
+Since version 2.21, message.GetValue() will decode the returned content. In version 2.33, it was homologated with the Value property.
