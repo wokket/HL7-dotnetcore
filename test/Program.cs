@@ -910,5 +910,14 @@ NTE|4||      Postmenopause:  25.8 - 134.8 mIU/ml";
             nte = message.Segments("NTE")[4];
             Assert.AreEqual(12, nte.GetSequenceNo());
         }
+
+        [TestMethod]
+        public void DecodeNonLatinChars()
+        {
+            var enconding = new HL7Encoding();
+
+            Assert.AreEqual(enconding.Decode(@"T\XC3A4\glich 1 Tablette oral einnehmen"), "Täglich 1 Tablette oral einnehmen");
+            Assert.AreEqual(enconding.Decode(@"\XE6AF8F\\XE5A4A9\\XE69C8D\\XE794A8\"), "每天服用");
+        }
     }
 }

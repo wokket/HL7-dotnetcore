@@ -1,4 +1,5 @@
-using System.Globalization;
+using System;
+using System.Linq;
 using System.Text;
 
 namespace HL7.Dotnetcore
@@ -208,9 +209,17 @@ namespace HL7.Dotnetcore
                         break;
                     default:
                         if (seq.StartsWith("X"))
-                            result.Append(((char)int.Parse(seq.Substring(1), NumberStyles.AllowHexSpecifier)));
+                        {
+                            byte[] bytes = Enumerable.Range(0, seq.Length - 1)
+                                .Where(x => x % 2 == 0)
+                                .Select(x => Convert.ToByte(seq.Substring(x + 1, 2), 16))
+                                .ToArray();
+                            result.Append(Encoding.UTF8.GetString(bytes));
+                        }
                         else
+                        {
                             result.Append(seq);
+                        }
                         break;
                 }
             }
