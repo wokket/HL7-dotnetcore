@@ -141,11 +141,11 @@ namespace HL7.Dotnetcore
             return null;
         }
 
-        public Field Repetitions(int repeatitionNumber)
+        public Field Repetitions(int repetitionNumber)
         {
             if (this.HasRepetitions)
             {
-                return RepetitionList[repeatitionNumber - 1];
+                return RepetitionList[repetitionNumber - 1];
             }
             return null;
         }

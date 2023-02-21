@@ -397,7 +397,7 @@ namespace HL7.Dotnetcore
         }
 
         /// <summary>
-        /// check if specified field has components
+        /// Checks if specified field has components
         /// </summary>
         /// <param name="strValueFormat">Field/Component position in format SEGMENTNAME.FieldIndex.ComponentIndex.SubComponentIndex example PID.5.2</param>
         /// <returns>boolean</returns>
@@ -437,14 +437,14 @@ namespace HL7.Dotnetcore
         }
 
         /// <summary>
-        /// check if specified fields has repeatitions
+        /// Checks if specified fields has repetitions
         /// </summary>
         /// <param name="strValueFormat">Field/Component position in format SEGMENTNAME.FieldIndex.ComponentIndex.SubComponentIndex example PID.5.2</param>
         /// <returns>boolean</returns>
         public bool HasRepetitions(string strValueFormat)
         {
-            bool hasRepetitions = false;
             string segmentName = string.Empty;
+
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, new char[] { '.' });
             int comCount = allComponents.Count;
             bool isValid = validateValueFormat(allComponents);
@@ -452,15 +452,14 @@ namespace HL7.Dotnetcore
             if (isValid)
             {
                 segmentName = allComponents[0];
-
+                var segment = SegmentList[segmentName].First();
+                
                 if (comCount >= 2)
                 {
                     try
                     {
-                        var segment = SegmentList[segmentName].First();
-                        var field = this.getField(segment, allComponents[1]);
-
-                        hasRepetitions = field.HasRepetitions;
+                        var count = this.getFieldRepetitions(segment, allComponents[1]);
+                        return count > 1;
                     }
                     catch (Exception ex)
                     {
@@ -472,12 +471,10 @@ namespace HL7.Dotnetcore
             }
             else
                 throw new HL7Exception("Request format is not valid");
-
-            return hasRepetitions;
         }
 
         /// <summary>
-        /// check if specified component has sub components
+        /// Checks if specified component has sub components
         /// </summary>
         /// <param name="strValueFormat">Field/Component position in format SEGMENTNAME.FieldIndex.ComponentIndex.SubComponentIndex example PID.5.2</param>
         /// <returns>boolean</returns>
@@ -696,7 +693,12 @@ namespace HL7.Dotnetcore
             }
         }
 
-
+        /// <summary>
+        /// Gets a field object within a segment by index
+        /// </summary>
+        /// <param name="segment">The segment object to search in/param>
+        /// <param name="index">The index of the field within the segment/param>
+        /// <returns>A Field object</returns>
         private Field getField(Segment segment, string index)
         {
             int repetition = 0;
@@ -722,6 +724,30 @@ namespace HL7.Dotnetcore
                 return field;
             else
                 return null;
+        }
+
+        /// <summary>
+        /// Determines if a segment field has repetitions
+        /// </summary>
+        /// <param name="segment">The segment object to search in/param>
+        /// <param name="index">The index of the field within the segment/param>
+        /// <returns>A boolean indicating whether the field has repetitions</returns>
+        private int getFieldRepetitions(Segment segment, string index)
+        {
+            var matches = System.Text.RegularExpressions.Regex.Matches(index, fieldRegex);
+
+            if (matches.Count < 1)
+                return 0;
+
+            Int32.TryParse(matches[0].Groups[1].Value, out int fieldIndex);
+            fieldIndex--;
+
+            var field = segment.FieldList[fieldIndex];
+
+            if (field.HasRepetitions)
+                return field.RepetitionList.Count;
+            else
+                return 1;
         }
 
         /// <summary>

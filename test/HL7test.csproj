@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Copyright>(c) Efferent Health, LLC</Copyright>
-    <VersionPrefix>2.33.0</VersionPrefix>
+    <VersionPrefix>2.34.0</VersionPrefix>
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>HL7Test</AssemblyName>
     <PackageId>HL7Test</PackageId>
@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!--PackageReference Include="hl7-dotnetcore" Version="2.17.0" /-->
     <ProjectReference Include="..\src\HL7-dotnetcore.csproj" />
   </ItemGroup>
 </Project>
