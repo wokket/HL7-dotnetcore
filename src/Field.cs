@@ -12,7 +12,7 @@ namespace HL7.Dotnetcore
 
         public bool IsComponentized { get; set; } = false;
         public bool HasRepetitions { get; set; } = false;
-        public bool IsDelimiters { get; set; } = false;
+        public bool IsDelimitersField { get; set; } = false;
 
         internal List<Field> RepetitionList
         {
@@ -31,7 +31,7 @@ namespace HL7.Dotnetcore
 
         protected override void ProcessValue()
         {
-            if (this.IsDelimiters)  // Special case for the delimiters fields (MSH)
+            if (this.IsDelimitersField)  // Special case for the delimiters fields (MSH)
             {
                 var subcomponent = new SubComponent(_value, this.Encoding);
 

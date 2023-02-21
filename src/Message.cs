@@ -172,9 +172,9 @@ namespace HL7.Dotnetcore
 
                             var field = seg.FieldList[i];
 
-                            if (field.IsDelimiters)
+                            if (field.IsDelimitersField)
                             {
-                                strMessage.Append(field.Value);
+                                strMessage.Append(field.UndecodedValue);
                                 continue;
                             }
 

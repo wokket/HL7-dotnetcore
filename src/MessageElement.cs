@@ -9,12 +9,20 @@ namespace HL7.Dotnetcore
         { 
             get 
             {
-                return _value == Encoding.PresentButNull ? null : _value; 
+                return _value == Encoding.PresentButNull ? null : Encoding.Decode(_value); 
             }
             set 
             { 
                 _value = value; 
                 ProcessValue(); 
+            }
+        }
+
+        public  string UndecodedValue 
+        { 
+            get 
+            {
+                return _value == Encoding.PresentButNull ? null : _value; 
             }
         }
 

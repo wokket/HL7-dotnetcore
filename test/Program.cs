@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,9 +13,9 @@ namespace HL7.Dotnetcore.Test
 
         public static void Main(string[] args)
         {
-            var test = new HL7Test();
-            // test.CustomDelimiter();
-            test.AddRepeatingField();
+            // var test = new HL7Test();
+            // test.DecodedValue1();
+            // test.AddRepeatingField();
         }
 
         public HL7Test()
@@ -800,6 +799,38 @@ OBX|1|TX|SCADOCTOR||^||||||F";
             
             Assert.IsTrue(message.SetValue("PID.2.4.1", testValue), "Should have successfully set value of SubComponent");
             Assert.AreEqual(testValue, message.GetValue("PID.2.4.1"));
+        }
+
+        [TestMethod]
+        public void DecodedValue()
+        {
+            var msg = "MSH|^~\\&|SAP|aaa|JCAPS||20210330150502||ADT^A28|0000000111300053|P|2.5||||||UNICODE UTF-8\r\nPID|||704251200^^^SAP^PI^0001~XXXXXXX^^^SS^SS^066^20210330~\"\"^^^^PRC~\"\"^^^^DL~\"\"^^^^PPN~XXXXXXXX^^^Ministero finanze^NN~\"\"^^^^PNT^^^\"\"~\"\"^^^^NPI^^\"\"^^\"\"&&\"\"^\"\"&\"\"||TEST\\F\\TEST^TEST2^^^SIG.^\"\"||19610926|M|||^^SANTEUSANIO FORCONESE^^^IT^BDL^^066090~&VIA DELLA PIEGA 12 TRALLaae^\"\"^SANTEUSANIO FORCONESE^AQ^67020^IT^L^^066090^^^^20210330||^ORN^^^^^^^^^^349 6927621~^NET^^\"\"|||2||||||||||IT^^100^Italiana|||\"\"||||20160408\r\n";
+
+            var message = new Message(msg);
+            message.ParseMessage();
+
+            var field = message.Segments("PID")[0].Fields(5).Value;
+            var component = message.Segments("PID")[0].Fields(5).Components(1).Value;
+            var subcomponent = message.Segments("PID")[0].Fields(5).Components(1).SubComponents(1).Value;
+
+            Assert.AreEqual(component, subcomponent);
+            Assert.IsTrue(field.StartsWith(component));
+        }
+
+        [TestMethod]
+        public void DecodedValue1()
+        {
+            var msg = "MSH|^~\\&|SAP|aaa|JCAPS||20210330150502||ADT^A28|0000000111300053|P|2.5||||||UNICODE UTF-8\r\nPID|||704251200^^^SAP^PI^0001~XXXXXXX^^^SS^SS^066^20210330~\"\"^^^^PRC~\"\"^^^^DL~\"\"^^^^PPN~XXXXXXXX^^^Ministero finanze^NN~\"\"^^^^PNT^^^\"\"~\"\"^^^^NPI^^\"\"^^\"\"&&\"\"^\"\"&\"\"||TEST\\F\\TEST^TEST2^^^SIG.^\"\"||19610926|M|||^^SANTEUSANIO FORCONESE^^^IT^BDL^^066090~&VIA DELLA PIEGA 12 TRALLaae^\"\"^SANTEUSANIO FORCONESE^AQ^67020^IT^L^^066090^^^^20210330||^ORN^^^^^^^^^^349 6927621~^NET^^\"\"|||2||||||||||IT^^100^Italiana|||\"\"||||20160408\r\n";
+
+            var message = new Message(msg);
+            message.ParseMessage();
+
+            var field = message.GetValue("PID.5");
+            var component = message.GetValue("PID.5.1");
+            var subcomponent = message.GetValue("PID.5.1.1");
+
+            Assert.AreEqual(component, subcomponent);
+            Assert.IsTrue(field.StartsWith(component));
         }
 
         [TestMethod]

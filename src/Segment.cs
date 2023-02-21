@@ -35,7 +35,7 @@ namespace HL7.Dotnetcore
                 Field field = new Field(this.Encoding);   
 
                 if (Name == "MSH" && i == 0)
-                    field.IsDelimiters = true; // special case
+                    field.IsDelimitersField = true; // special case
 
                 field.Value = strField;
                 this.FieldList.Add(field);
@@ -44,7 +44,7 @@ namespace HL7.Dotnetcore
             if (this.Name == "MSH")
             {
                 var field1 = new Field(this.Encoding);
-                field1.IsDelimiters = true;
+                field1.IsDelimitersField = true;
                 field1.Value = this.Encoding.FieldDelimiter.ToString();
 
                 this.FieldList.Insert(0,field1);
@@ -74,7 +74,7 @@ namespace HL7.Dotnetcore
             var newField = new Field(this.Encoding);
 
             if (isDelimiters)
-                newField.IsDelimiters = true; // Prevent decoding
+                newField.IsDelimitersField = true; // Prevent decoding
 
             newField.Value = content;
             this.AddNewField(newField, -1);
