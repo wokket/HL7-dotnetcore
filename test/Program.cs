@@ -331,6 +331,20 @@ namespace HL7.Dotnetcore.Test
         }
 
         [TestMethod]
+        public void PresentButNull()
+        {
+            const string sampleMessage = "MSH|^~\\&|SA|SF|RA|RF|20110613083617||ADT^A04|123|P|2.7||||\r\nEVN|A04|20110613083617||\"\"\r\n";
+
+            var message = new Message(sampleMessage);
+            message.Encoding.PresentButNull = null;
+            message.ParseMessage();
+
+            var evn = message.Segments("EVN")[0];
+            var expectDoubleQuotes = evn.Fields(4).Value;
+            Assert.AreEqual("\"\"", expectDoubleQuotes);
+        }
+
+        [TestMethod]
         public void MessageWithSegmentNameOnly()
         {
             const string sampleMessage = "MSH|^~\\&|SA|SF|RA|RF|20110613083617||ADT^A04|123|P|2.7||||\r\nPID\r\nEVN|A04|20110613083617||\"\"\r\n";
@@ -562,11 +576,11 @@ PV1||A|00004620^00001318^1318||||000123456^Superfrau^Maria W.^|^Superarzt^Anton^
             orcSegment.Fields(12).Components(1).Value = "should not be removed";
             orcSegment.Fields(12).Components(2).Value = "should not be removed";
             orcSegment.Fields(12).Components(3).Value = "should not be removed";
-            orcSegment.Fields(12).Components(4).Value = ""; // should not be removed because in between valid values
+            orcSegment.Fields(12).Components(4).Value = string.Empty; // should not be removed because in between valid values
             orcSegment.Fields(12).Components(5).Value = "should not be removed";
-            orcSegment.Fields(12).Components(6).Value = ""; // should be removed because trailing
-            orcSegment.Fields(12).Components(7).Value = ""; // should be removed because trailing
-            orcSegment.Fields(12).Components(8).Value = ""; // should be removed because trailing
+            orcSegment.Fields(12).Components(6).Value = string.Empty; // should be removed because trailing
+            orcSegment.Fields(12).Components(7).Value = string.Empty; // should be removed because trailing
+            orcSegment.Fields(12).Components(8).Value = string.Empty; // should be removed because trailing
 
             orcSegment.Fields(12).RemoveEmptyTrailingComponents();
             message.AddNewSegment(orcSegment);
@@ -590,7 +604,7 @@ PV1||A|00004620^00001318^1318||||000123456^Superfrau^Maria W.^|^Superarzt^Anton^
             for (int eachComponent = 1; eachComponent < 8; eachComponent++)
             {
                 orcSegment.Fields(12).AddNewComponent(new Component(new HL7Encoding()));
-                orcSegment.Fields(12).Components(eachComponent).Value = "";
+                orcSegment.Fields(12).Components(eachComponent).Value = string.Empty;
             }
 
             orcSegment.Fields(12).RemoveEmptyTrailingComponents();
@@ -768,7 +782,7 @@ OBX|1|TX|SCADOCTOR||^||||||F";
             var message = new Message(sampleMessage);
             message.ParseMessage();
 
-            var invalidRequest = Assert.ThrowsException<HL7Exception>(() => message.SetValue("", testValue));
+            var invalidRequest = Assert.ThrowsException<HL7Exception>(() => message.SetValue(string.Empty, testValue));
             Assert.IsTrue(invalidRequest.Message.Contains("Request format"), "Should have thrown exception because of invalid request format");
             
             var unavailableSegment = Assert.ThrowsException<HL7Exception>(() => message.SetValue("OBX.1", testValue));

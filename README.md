@@ -154,11 +154,11 @@ Field f = new Field(enc);
 f.HasRepetitions = true;
 
 // Adding field f1 to f
-Field f1 = new Field("A",enc);
+Field f1 = new Field("A", enc);
 f.AddRepeatingField(f1);
 
 // Adding field f2 to f
-Field f2 = new Field("B",enc);
+Field f2 = new Field("B", enc);
 f.AddRepeatingField(f2);
 ````
 
@@ -380,6 +380,14 @@ Whenever requested individually, those elements are returned as `null`, rather t
 var expectEmpty = evn.Fields(3).Value; // Will return an empty string
 var expectNull = evn.Fields(4).Value; // Will return null
 ````
+
+If this behavior is not desirable, it can be disabled by setting `Encoding.PresentButNull` to `null` before parsing:
+
+````cSharp
+var message = new Message(msg);
+message.Encoding.PresentButNull = null;
+message.ParseMessage();
+`````
 
 ### Date Handling
 
