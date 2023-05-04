@@ -13,7 +13,7 @@ namespace HL7.Dotnetcore
         public char SubComponentDelimiter { get; set; } = '&'; // \T\
         public string SegmentDelimiter { get; set; } = "\r";
         public string PresentButNull { get; set; } = "\"\"";
-        public string AllDelimiters => "" + FieldDelimiter + ComponentDelimiter + RepeatDelimiter + EscapeCharacter + SubComponentDelimiter;
+        public string AllDelimiters => "" + FieldDelimiter + ComponentDelimiter + RepeatDelimiter + (EscapeCharacter == (char)0 ? "" : EscapeCharacter.ToString()) + SubComponentDelimiter;
 
         public HL7Encoding()
         {
@@ -24,8 +24,17 @@ namespace HL7.Dotnetcore
             this.FieldDelimiter = delimiters[0];
             this.ComponentDelimiter = delimiters[1];
             this.RepeatDelimiter = delimiters[2];
-            this.EscapeCharacter = delimiters[3];
-            this.SubComponentDelimiter = delimiters[4];
+
+            if (delimiters[4] == this.FieldDelimiter)
+            {
+                this.EscapeCharacter = (char)0;
+                this.SubComponentDelimiter = delimiters[3];
+            }
+            else
+            {
+                this.EscapeCharacter = delimiters[3];
+                this.SubComponentDelimiter = delimiters[4];
+            }
         }
 
         public void EvaluateSegmentDelimiter(string message)

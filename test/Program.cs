@@ -16,6 +16,8 @@ namespace HL7.Dotnetcore.Test
             // var test = new HL7Test();
             // test.DecodedValue1();
             // test.AddRepeatingField();
+            // test.GenerateAckShortSeparatorListTest();
+            // test.CustomDelimiterTest();
         }
 
         public HL7Test()
@@ -505,7 +507,7 @@ ZZ1|1|139378|20201230100000|ghg^ghgh-HA||s1^OP-Saal 1|gh^gjhg 1|ghg^ghjg-HA|BSV 
                 "FIFTH", "ORU2R05F5", "SIXTH", "SEVENTH", "2.8");
             var result = message.SerializeMessage(false);
 
-            Assert.AreEqual("MSH124531", result.Substring(0, 9));
+            Assert.AreEqual("MSH124531FIRST1SECOND1", result.Substring(0, 22));
         }
 
         [DataTestMethod]
@@ -919,5 +921,24 @@ NTE|4||      Postmenopause:  25.8 - 134.8 mIU/ml";
             Assert.AreEqual(enconding.Decode(@"T\XC3A4\glich 1 Tablette oral einnehmen"), "Täglich 1 Tablette oral einnehmen");
             Assert.AreEqual(enconding.Decode(@"\XE6AF8F\\XE5A4A9\\XE69C8D\\XE794A8\"), "每天服用");
         }
+
+        [TestMethod]
+        public void GenerateAckNoEscapeDelimiterTest()
+        {
+            var sampleMessage = @"MSH|^~&|EPIC||||20191107134803|ALEVIB01|ORM^O01|23|T|2.3|||||||||||";
+            sampleMessage = $"{sampleMessage}\nPID|1||MRN_123^^^IDX^MRN||Smith F S R E T^John||19600101|M";
+
+            var message = new Message(sampleMessage);
+            message.ParseMessage();
+            var ack = message.GetACK();
+
+            Assert.IsNotNull(ack);
+
+            var ACK_MSH_2 = ack.GetValue("MSH.2");
+            var MSG_MSH_2 = message.GetValue("MSH.2");
+
+            Assert.AreEqual(ACK_MSH_2, "^~&");
+            Assert.AreEqual(MSG_MSH_2, "^~&");
+        }        
     }
 }
