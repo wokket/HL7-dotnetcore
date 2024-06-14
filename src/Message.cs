@@ -105,7 +105,7 @@ namespace HL7.Dotnetcore
 
                     this.SegmentCount = segSeqNo;
 
-                    string strSerializedMessage = string.Empty;
+                    string strSerializedMessage;
 
                     try
                     {
@@ -224,7 +224,7 @@ namespace HL7.Dotnetcore
             
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
             int comCount = allComponents.Count;
-            bool isValid = validateValueFormat(allComponents);
+            bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
             {
@@ -325,7 +325,7 @@ namespace HL7.Dotnetcore
             int subComponentIndex = 0;
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
             int comCount = allComponents.Count;
-            bool isValid = validateValueFormat(allComponents);
+            bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
             {
@@ -406,7 +406,7 @@ namespace HL7.Dotnetcore
             string segmentName = string.Empty;
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
             int comCount = allComponents.Count;
-            bool isValid = validateValueFormat(allComponents);
+            bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
             {
@@ -445,7 +445,7 @@ namespace HL7.Dotnetcore
         {
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
             int comCount = allComponents.Count;
-            bool isValid = validateValueFormat(allComponents);
+            bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
             {
@@ -483,7 +483,7 @@ namespace HL7.Dotnetcore
             int componentIndex = 0;
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
             int comCount = allComponents.Count;
-            bool isValid = validateValueFormat(allComponents);
+            bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
             {
@@ -902,24 +902,24 @@ namespace HL7.Dotnetcore
         /// <returns>A list of segments in the proper order</returns>
         private List<Segment> getAllSegmentsInOrder()
         {
-            List<Segment> _list = new List<Segment>();
+            List<Segment> list = new List<Segment>();
 
             foreach (string segName in SegmentList.Keys)
             {
                 foreach (Segment seg in SegmentList[segName])
                 {
-                    _list.Add(seg);
+                    list.Add(seg);
                 }
             }
 
-            return _list.OrderBy(o => o.SequenceNo).ToList();
+            return list.OrderBy(o => o.SequenceNo).ToList();
         }
 
         /// <summary>
         /// Validates the components of a value's position descriptor
         /// </summary>
         /// <returns>A boolean indicating whether all the components are valid or not</returns>
-        private bool validateValueFormat(List<string> allComponents)
+        private bool ValidateValueFormat(List<string> allComponents)
         {
             bool isValid = false;
 

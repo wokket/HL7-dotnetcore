@@ -55,7 +55,7 @@ namespace HL7.Dotnetcore
 
         // Encoding methods based on https://github.com/elomagic/hl7inspector
 
-        public  string Encode(string val)
+        public string Encode(string val)
         {
             if (val == null)
                 return PresentButNull;
@@ -65,7 +65,7 @@ namespace HL7.Dotnetcore
 
             var sb = new StringBuilder();
 
-            for (int i = 0; i < val.Length; i++) 
+            for (int i = 0; i < val.Length; i++)
             {
                 char c = val[i];
 
@@ -74,7 +74,7 @@ namespace HL7.Dotnetcore
                 {
                     continueEncoding = false;
                     // special case <B>
-                    if (val.Length >= i + 3 && val[i+1] == 'B' && val[i+2] == '>')
+                    if (val.Length >= i + 3 && val[i + 1] == 'B' && val[i + 2] == '>')
                     {
                         sb.Append(this.EscapeCharacter);
                         sb.Append("H");
@@ -102,7 +102,7 @@ namespace HL7.Dotnetcore
                         continueEncoding = true;
                     }
                 }
-                
+
                 if (continueEncoding)
                 {
                     if (c == this.ComponentDelimiter)
@@ -137,7 +137,7 @@ namespace HL7.Dotnetcore
                     }
                     else if (c == 10 || c == 13) // All other non-visible characters will be preserved
                     {
-                        string v = string.Format("{0:X2}",(int)c);
+                        string v = string.Format("{0:X2}", (int)c);
 
                         if ((v.Length % 2) != 0) // make number of digits even, this test would only be needed for values > 0xFF
                             v = "0" + v;
@@ -191,12 +191,12 @@ namespace HL7.Dotnetcore
                     continue;
                 }
 
-                string seq = encodedValue.Substring(i, li-i);
+                string seq = encodedValue.Substring(i, li - i);
                 i = li;
 
                 if (seq.Length == 0)
                     continue;
-            
+
                 switch (seq)
                 {
                     case "H": // Start higlighting
@@ -236,6 +236,7 @@ namespace HL7.Dotnetcore
                         {
                             result.Append(seq);
                         }
+
                         break;
                 }
             }
