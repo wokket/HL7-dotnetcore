@@ -8,12 +8,14 @@ namespace HL7.Dotnetcore
     {
         public char FieldDelimiter { get; set; } = '|'; // \F\
         public char ComponentDelimiter { get; set; } = '^'; // \S\
-        public char RepeatDelimiter { get; set; } = '~';  // \R\
+        public char RepeatDelimiter { get; set; } = '~'; // \R\
         public char EscapeCharacter { get; set; } = '\\'; // \E\
         public char SubComponentDelimiter { get; set; } = '&'; // \T\
         public string SegmentDelimiter { get; set; } = "\r";
         public string PresentButNull { get; set; } = "\"\"";
-        public string AllDelimiters => "" + FieldDelimiter + ComponentDelimiter + RepeatDelimiter + (EscapeCharacter == (char)0 ? "" : EscapeCharacter.ToString()) + SubComponentDelimiter;
+
+        public string AllDelimiters => "" + FieldDelimiter + ComponentDelimiter + RepeatDelimiter +
+                                       (EscapeCharacter == (char)0 ? "" : EscapeCharacter.ToString()) + SubComponentDelimiter;
 
         public HL7Encoding()
         {
@@ -37,6 +39,22 @@ namespace HL7.Dotnetcore
             }
         }
 
+#if NET8_0
+        private static readonly string[] _segmentDelimiters = ["\r\n", "\n\r", "\r", "\n"];
+        public void EvaluateSegmentDelimiter(string message)
+        {
+            foreach (var delim in _segmentDelimiters)
+            {
+                if (message.Contains(delim))
+                {
+                    SegmentDelimiter = delim;
+                    return;
+                }
+            }
+
+            throw new HL7Exception("Segment delimiter not found in message", HL7Exception.BAD_MESSAGE);
+        }
+#else
         public void EvaluateSegmentDelimiter(string message)
         {
             string[] delimiters = new[] { "\r\n", "\n\r", "\r", "\n" };
@@ -52,10 +70,12 @@ namespace HL7.Dotnetcore
 
             throw new HL7Exception("Segment delimiter not found in message", HL7Exception.BAD_MESSAGE);
         }
+#endif
+
 
         // Encoding methods based on https://github.com/elomagic/hl7inspector
 
-        public  string Encode(string val)
+        public string Encode(string val)
         {
             if (val == null)
                 return PresentButNull;
@@ -65,7 +85,7 @@ namespace HL7.Dotnetcore
 
             var sb = new StringBuilder();
 
-            for (int i = 0; i < val.Length; i++) 
+            for (int i = 0; i < val.Length; i++)
             {
                 char c = val[i];
 
@@ -74,7 +94,7 @@ namespace HL7.Dotnetcore
                 {
                     continueEncoding = false;
                     // special case <B>
-                    if (val.Length >= i + 3 && val[i+1] == 'B' && val[i+2] == '>')
+                    if (val.Length >= i + 3 && val[i + 1] == 'B' && val[i + 2] == '>')
                     {
                         sb.Append(this.EscapeCharacter);
                         sb.Append("H");
@@ -100,7 +120,7 @@ namespace HL7.Dotnetcore
                     else
                         continueEncoding = true;
                 }
-                
+
                 if (continueEncoding)
                 {
                     if (c == this.ComponentDelimiter)
@@ -135,7 +155,7 @@ namespace HL7.Dotnetcore
                     }
                     else if (c == 10 || c == 13) // All other non-visible characters will be preserved
                     {
-                        string v = string.Format("{0:X2}",(int)c);
+                        string v = string.Format("{0:X2}", (int)c);
 
                         if ((v.Length % 2) != 0) // make number of digits even, this test would only be needed for values > 0xFF
                             v = "0" + v;
@@ -159,6 +179,15 @@ namespace HL7.Dotnetcore
         {
             if (string.IsNullOrWhiteSpace(encodedValue))
                 return encodedValue;
+            
+            //not strictly a net8 change, but helps separate 'before' perf from these changes
+            #if NET8_0
+            if (!encodedValue.Contains(EscapeCharacter))
+            {
+                // no need to decode, just return as is
+                return encodedValue;
+            }
+            #endif
 
             var result = new StringBuilder();
 
@@ -182,14 +211,14 @@ namespace HL7.Dotnetcore
                     result.Append(encodedValue[i]);
                     continue;
                 }
-                
 
-                string seq = encodedValue.Substring(i, li-i);
+
+                string seq = encodedValue.Substring(i, li - i);
                 i = li;
 
                 if (seq.Length == 0)
                     continue;
-            
+
                 switch (seq)
                 {
                     case "H": // Start higlighting
@@ -229,6 +258,7 @@ namespace HL7.Dotnetcore
                         {
                             result.Append(seq);
                         }
+
                         break;
                 }
             }

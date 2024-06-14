@@ -6,7 +6,8 @@ using System.Text.RegularExpressions;
 
 namespace HL7.Dotnetcore
 {
-    public class Message
+    public partial class Message
+    
     {
         private List<string> allSegments = null;
         internal Dictionary<string, List<Segment>> SegmentList { get; set; } = new Dictionary<string, List<Segment>>();
@@ -19,7 +20,17 @@ namespace HL7.Dotnetcore
         public int SegmentCount { get; set; }
         public HL7Encoding Encoding { get; set; } = new HL7Encoding();
 
-        private const string segmentRegex = @"^([A-Z][A-Z][A-Z1-9])([\(\[]([0-9]+)[\)\]]){0,1}$";
+        
+        
+        #if NET8_0
+        [GeneratedRegex(@"^([A-Z][A-Z][A-Z1-9])([\(\[]([0-9]+)[\)\]]){0,1}$", RegexOptions.ExplicitCapture)]
+        private static partial Regex SegmentRegex();
+        #else
+            private const string segmentRegex = @"^([A-Z][A-Z][A-Z1-9])([\(\[]([0-9]+)[\)\]]){0,1}$";
+        #endif
+        
+        
+        
         private const string fieldRegex = @"^([0-9]+)([\(\[]([0-9]+)[\)\]]){0,1}$";
         private const string otherRegEx = @"^[1-9]([0-9]{1,2})?$";
 
@@ -71,9 +82,9 @@ namespace HL7.Dotnetcore
                 }
                 else { isValid = true; }
             }
-            catch (HL7Exception ex)
+            catch (HL7Exception)
             {
-                throw ex;
+                throw;
             }
             catch (Exception ex)
             {
@@ -106,7 +117,7 @@ namespace HL7.Dotnetcore
 
                     this.SegmentCount = segSeqNo;
 
-                    string strSerializedMessage = string.Empty;
+                    string strSerializedMessage;
 
                     try
                     {
@@ -226,11 +237,18 @@ namespace HL7.Dotnetcore
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, new char[] { '.' });
 
             int comCount = allComponents.Count;
-            bool isValid = validateValueFormat(allComponents);
+            bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
             {
+                
+                
+                #if NET8_0
+                var matches = SegmentRegex().Matches(allComponents[0]);
+                #else 
                 var matches = System.Text.RegularExpressions.Regex.Matches(allComponents[0], segmentRegex);
+                #endif
+                
                 if (matches.Count < 1)
                     throw new HL7Exception("Request format is not valid: " + strValueFormat);
 
@@ -326,7 +344,7 @@ namespace HL7.Dotnetcore
             int subComponentIndex = 0;
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, new char[] { '.' });
             int comCount = allComponents.Count;
-            bool isValid = validateValueFormat(allComponents);
+            bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
             {
@@ -407,7 +425,7 @@ namespace HL7.Dotnetcore
             string segmentName = string.Empty;
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, new char[] { '.' });
             int comCount = allComponents.Count;
-            bool isValid = validateValueFormat(allComponents);
+            bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
             {
@@ -447,7 +465,7 @@ namespace HL7.Dotnetcore
 
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, new char[] { '.' });
             int comCount = allComponents.Count;
-            bool isValid = validateValueFormat(allComponents);
+            bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
             {
@@ -485,7 +503,7 @@ namespace HL7.Dotnetcore
             int componentIndex = 0;
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, new char[] { '.' });
             int comCount = allComponents.Count;
-            bool isValid = validateValueFormat(allComponents);
+            bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
             {
@@ -784,9 +802,14 @@ namespace HL7.Dotnetcore
                         if (string.IsNullOrWhiteSpace(strSegment))
                             continue;
 
+#if NET8_0
+                        var segmentName = strSegment.AsSpan()[..3];
+                        bool isValidSegmentName = SegmentRegex().IsMatch(segmentName);
+#else
                         string segmentName = strSegment.Substring(0, 3);
                         bool isValidSegmentName = System.Text.RegularExpressions.Regex.IsMatch(segmentName, segmentRegex);
-
+#endif
+                        
                         if (!isValidSegmentName)
                         {
                             throw new HL7Exception("Invalid segment name found: " + strSegment, HL7Exception.BAD_MESSAGE);
@@ -923,30 +946,35 @@ namespace HL7.Dotnetcore
         /// <returns>A list of segments in the proper order</returns>
         private List<Segment> getAllSegmentsInOrder()
         {
-            List<Segment> _list = new List<Segment>();
+            List<Segment> list = new List<Segment>();
 
             foreach (string segName in SegmentList.Keys)
             {
                 foreach (Segment seg in SegmentList[segName])
                 {
-                    _list.Add(seg);
+                    list.Add(seg);
                 }
             }
 
-            return _list.OrderBy(o => o.SequenceNo).ToList();
+            return list.OrderBy(o => o.SequenceNo).ToList();
         }
 
         /// <summary>
         /// Validates the components of a value's position descriptor
         /// </summary>
         /// <returns>A boolean indicating whether all the components are valid or not</returns>
-        private bool validateValueFormat(List<string> allComponents)
+        private bool ValidateValueFormat(List<string> allComponents)
         {
             bool isValid = false;
 
             if (allComponents.Count > 0)
             {
+                
+#if NET8_0
+                if (SegmentRegex().IsMatch(allComponents[0]))
+#else
                 if (Regex.IsMatch(allComponents[0], segmentRegex))
+#endif
                 {
                     for (int i = 1; i < allComponents.Count; i++)
                     {
