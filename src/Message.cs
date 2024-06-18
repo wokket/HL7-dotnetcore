@@ -23,7 +23,7 @@ namespace HL7.Dotnetcore
         
         
         #if NET8_0
-        [GeneratedRegex(@"^([A-Z][A-Z][A-Z1-9])([\(\[]([0-9]+)[\)\]]){0,1}$", RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(@"^([A-Z][A-Z][A-Z1-9])([\(\[]([0-9]+)[\)\]]){0,1}$")]
         private static partial Regex SegmentRegex();
         #else
             private const string segmentRegex = @"^([A-Z][A-Z][A-Z1-9])([\(\[]([0-9]+)[\)\]]){0,1}$";
@@ -241,8 +241,6 @@ namespace HL7.Dotnetcore
 
             if (isValid)
             {
-                
-                
                 #if NET8_0
                 var matches = SegmentRegex().Matches(allComponents[0]);
                 #else 

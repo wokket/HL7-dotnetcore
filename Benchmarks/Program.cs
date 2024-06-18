@@ -1,5 +1,5 @@
 ﻿// to run this targeting multiple frameworks, use 
-//   dotnet run -c Release -f net48 --filter "*" --runtimes net48 net8.0
+//   dotnet run -c Release -f net48 --filter "*"
 // I'm using net48 just to target the netstandard21 version of the library
 
 using BenchmarkDotNet.Running;
@@ -9,6 +9,11 @@ internal class Program
 {
     public static void Main(string[] args)
     {
-        BenchmarkSwitcher.FromAssembly(typeof(ParseOrmBench).Assembly).Run(args);
+        // var obj = new QueryFieldBench();
+        // obj.Setup();
+        //
+        // obj.QueryRequestDateTime();
+
+        BenchmarkSwitcher.FromAssembly(typeof(ParseMessageBench).Assembly).Run(args);
     }
 }
