@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Copyright>(c) Efferent Health, LLC</Copyright>
     <VersionPrefix>2.36.0</VersionPrefix>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>HL7Test</AssemblyName>
     <PackageId>HL7Test</PackageId>
     <OutputType>exe</OutputType>

@@ -879,9 +879,9 @@ OBX|1|TX|SCADOCTOR||^||||||F";
             string sampleMessage = this.HL7_ADT;
             var message = new Message(sampleMessage);
             message.ParseMessage();
-            Console.WriteLine(message.Segments("PID")[0].Fields(18).Value);
+
             Assert.IsFalse(message.HasRepetitions("PID.3"));
-            //Assert.IsTrue(message.HasRepetitions("PID.18")); // Possible bug in the upstream library
+            Assert.IsTrue(message.HasRepetitions("PID.18")); 
         }
 
         [TestMethod]
@@ -939,6 +939,19 @@ NTE|4||      Postmenopause:  25.8 - 134.8 mIU/ml";
 
             Assert.AreEqual(ACK_MSH_2, "^~&");
             Assert.AreEqual(MSG_MSH_2, "^~&");
-        }        
+        }
+
+        [TestMethod]
+        public void DoubleEncoding()
+        {
+            var sampleMessage = @"MSH|^~\&|Main_HIS|XYZ_HOSPITAL|iFW|ABC_Lab|20160915003015||ACK|9B38584D|P|2.6.1|
+MSA|AA|9B38584D|Double encoded value: \E\T\E\|";
+
+            var message = new Message(sampleMessage);
+            var isParsed = message.ParseMessage();
+
+            Assert.IsTrue(isParsed);
+            Assert.IsTrue(message.GetValue("MSA.3").EndsWith("&"));
+        }
     }
 }
