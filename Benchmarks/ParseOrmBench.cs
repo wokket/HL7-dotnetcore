@@ -1,40 +1,55 @@
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Environments;
+using BenchmarkDotNet.Jobs;
 using HL7.Dotnetcore;
-using System.IO;
 
 namespace Benchmarks
 {
-    [SimpleJob]
+
+    /// <summary>
+    /// Basic benchmark comparing the nuget version to our local code, for both Framework 4.8 and net8.  Calls a copy of one of the tests
+    /// that best reflects my usage scenarios (Parse and GetValue)
+    /// </summary>
+    [Config(typeof(Config))]
     [MemoryDiagnoser]
-    public class ParseOrmBench
+    public class ParseMessageBench
     {
-        /*
-// Before starting to multi-target
-| Method   | Runtime            | Mean     | Error    | StdDev   | Ratio | RatioSD | Gen0    | Gen1   | Allocated | Alloc Ratio |
-|--------- |------------------- |---------:|---------:|---------:|------:|--------:|--------:|-------:|----------:|------------:|
-| ParseOrm | .NET Framework 4.8 | 92.11 us | 1.173 us | 1.040 us |  0.97 |    0.02 | 44.5557 | 8.6670 | 274.38 KB |        1.00 |
-| ParseOrm | .NET 8.0           | 49.60 us | 0.260 us | 0.203 us |  0.52 |    0.01 | 13.6108 | 2.6245 | 208.53 KB |        0.76 |
-
-
-// After upgrading SegmentRegex
-         
-         */
-        
-
-        private string ORM;
-
-        [GlobalSetup]
-        public void Setup()
+        private class Config : ManualConfig
         {
-            ORM = File.ReadAllText("Sample-ORM.txt");
+            public Config()
+            {
+                var baseJob = Job.ShortRun; 
+                WithOptions(ConfigOptions.DisableOptimizationsValidator);
+                AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.0").WithRuntime(ClrRuntime.Net48));
+                AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.0").WithRuntime(CoreRuntime.Core80));
+                AddJob(baseJob.WithRuntime(ClrRuntime.Net48).WithCustomBuildConfiguration("LOCAL_CODE")); // custom config to include/exclude nuget reference or target project reference locally
+                AddJob(baseJob.WithRuntime(CoreRuntime.Core80).WithCustomBuildConfiguration("LOCAL_CODE")); // custom config to include/exclude nuget reference or target project reference locally
+            }
         }
-    
-    
+
         [Benchmark]
-        public void ParseOrm()
+        public void ParseMessage()
         {
-            var message = new Message(ORM);
-            var result = message.ParseMessage(false);
+            //_testHarness.BypassValidationGetACK();
+            BypassValidationGetACK();
+        }
+
+        private void BypassValidationGetACK()
+        {
+            string sampleMessage = @"MSH|^~\&|SCA|SCA|LIS|LIS|202107300000||ORU^R01||P|2.4|||||||
+PID|1|1234|1234||JOHN^DOE||19000101||||||||||||||
+OBR|1|1234|1234||||20210708|||||||||||||||20210708||||||||||
+OBX|1|TX|SCADOCTOR||^||||||F";
+                var msg = new Message(sampleMessage);
+                msg.ParseMessage(true);
+
+                var ack = msg.GetACK(true);
+                string sendingApp = ack.GetValue("MSH.3");
+                string sendingFacility = ack.GetValue("MSH.4");
+                string receivingApp = ack.GetValue("MSH.5");
+                string receivingFacility = ack.GetValue("MSH.6");
+                string messageType = ack.GetValue("MSH.9");
         }
     }
 }

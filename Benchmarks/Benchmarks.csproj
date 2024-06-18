@@ -5,6 +5,10 @@
         <TargetFrameworks>net8.0;net48</TargetFrameworks>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup>
         <None Update="Sample-ORM.txt">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
