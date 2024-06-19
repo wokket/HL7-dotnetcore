@@ -22,15 +22,15 @@ namespace HL7.Dotnetcore
 
         
         
-        #if NET8_0
+#if NET8_0_OR_GREATER
         [GeneratedRegex(@"^([A-Z][A-Z][A-Z1-9])([\(\[]([0-9]+)[\)\]]){0,1}$")]
         private static partial Regex SegmentRegex();
-        #else
+#else
             private const string segmentRegex = @"^([A-Z][A-Z][A-Z1-9])([\(\[]([0-9]+)[\)\]]){0,1}$";
-        #endif
-        
-        
-#if NET8_0
+#endif
+
+
+#if NET8_0_OR_GREATER
         [GeneratedRegex(@"^([0-9]+)([\(\[]([0-9]+)[\)\]]){0,1}$")]
         private static partial Regex FieldRegex();
 #else        
@@ -38,7 +38,7 @@ namespace HL7.Dotnetcore
 #endif   
         
 #if NET8_0
-        [GeneratedRegex(@"""^[1-9]([0-9]{1,2})?$""", RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(@"^[1-9]([0-9]{1,2})?$")]
         private static partial Regex OtherRegEx();
 #else
         private const string otherRegEx = @"^[1-9]([0-9]{1,2})?$";
@@ -728,7 +728,7 @@ namespace HL7.Dotnetcore
         private Field getField(Segment segment, string index)
         {
             int repetition = 0;
-#if NET8_0
+#if NET8_0_OR_GREATER
             var matches = FieldRegex().Matches(index);
 #else
             var matches = System.Text.RegularExpressions.Regex.Matches(index, fieldRegex);
@@ -763,7 +763,7 @@ namespace HL7.Dotnetcore
         /// <returns>A boolean indicating whether the field has repetitions</returns>
         private int getFieldRepetitions(Segment segment, string index)
         {
-#if NET8_0
+#if NET8_0_OR_GREATER
             var matches = FieldRegex().Matches(index);
 #else
             var matches = System.Text.RegularExpressions.Regex.Matches(index, fieldRegex);
@@ -816,7 +816,7 @@ namespace HL7.Dotnetcore
                         if (string.IsNullOrWhiteSpace(strSegment))
                             continue;
 
-#if NET8_0
+#if NET8_0_OR_GREATER
                         var segmentName = strSegment.AsSpan()[..3];
                         bool isValidSegmentName = SegmentRegex().IsMatch(segmentName);
 #else
@@ -983,8 +983,8 @@ namespace HL7.Dotnetcore
 
             if (allComponents.Count > 0)
             {
-                
-#if NET8_0
+
+#if NET8_0_OR_GREATER
                 if (SegmentRegex().IsMatch(allComponents[0]))
 #else
                 if (Regex.IsMatch(allComponents[0], segmentRegex))
@@ -992,7 +992,7 @@ namespace HL7.Dotnetcore
                 {
                     for (int i = 1; i < allComponents.Count; i++)
                     {
-#if NET8_0
+#if NET8_0_OR_GREATER
                         if (i == 1 && FieldRegex().IsMatch(allComponents[i]))
                             isValid = true;
                         else if (i > 1 && OtherRegEx().IsMatch(allComponents[i]))

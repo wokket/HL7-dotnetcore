@@ -9,10 +9,9 @@ internal class Program
 {
     public static void Main(string[] args)
     {
-        // var obj = new QueryFieldBench();
-        // obj.Setup();
-        //
-        // obj.QueryRequestDateTime();
+        //var obj = new ParseMessageBench();
+        //obj.ParseMessage();
+
 
         BenchmarkSwitcher.FromAssembly(typeof(ParseMessageBench).Assembly).Run(args);
     }

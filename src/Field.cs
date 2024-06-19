@@ -34,8 +34,12 @@ namespace HL7.Dotnetcore
             if (this.IsDelimitersField)  // Special case for the delimiters fields (MSH)
             {
                 var subcomponent = new SubComponent(_value, this.Encoding);
+#if NET8_0_OR_GREATER
+                this.ComponentList.Clear();
+#else
+                this.ComponentList = new ComponentCollection(1);
+#endif
 
-                this.ComponentList = new ComponentCollection();
                 Component component = new Component(this.Encoding, true);
 
                 component.SubComponentList.Add(subcomponent);
@@ -48,8 +52,8 @@ namespace HL7.Dotnetcore
 
             if (this.HasRepetitions)
             {
-                _RepetitionList = new List<Field>();
                 List<string> individualFields = MessageHelper.SplitString(_value, this.Encoding.RepeatDelimiter);
+                _RepetitionList = new List<Field>(individualFields.Count);
 
                 for (int index = 0; index < individualFields.Count; index++)
                 {
@@ -61,7 +65,7 @@ namespace HL7.Dotnetcore
             {
                 List<string> allComponents = MessageHelper.SplitString(_value, this.Encoding.ComponentDelimiter);
 
-                this.ComponentList = new ComponentCollection();
+                this.ComponentList = new ComponentCollection(allComponents.Count);
 
                 foreach (string strComponent in allComponents)
                 {

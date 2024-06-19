@@ -13,7 +13,9 @@ namespace HL7.Dotnetcore.Test
 
         public static void Main(string[] args)
         {
-            // var test = new HL7Test();
+            
+            var test = new HL7Test();
+            test.BypassValidationGetACK();
             // test.DecodedValue1();
             // test.AddRepeatingField();
             // test.GenerateAckShortSeparatorListTest();

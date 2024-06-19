@@ -30,10 +30,12 @@ namespace Benchmarks
             public Config()
             {
                 var baseJob = Job.ShortRun;
-                WithOptions(ConfigOptions.DisableOptimizationsValidator);
-                AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.0").WithRuntime(ClrRuntime.Net48).WithId("Nuget Net4.8"));
-                
-                AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.0").WithRuntime(CoreRuntime.Core80).WithId("Nuget Net8").AsBaseline());
+                // WithOptions(ConfigOptions.DisableOptimizationsValidator);
+                // AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.0").WithRuntime(ClrRuntime.Net48).WithId("Nuget Net4.8"));
+                // AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.0").WithRuntime(CoreRuntime.Core80).WithId("Nuget Net8").AsBaseline());
+                //
+                AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.1").WithRuntime(CoreRuntime.Core80).WithId("Nuget Net8").AsBaseline());
+                AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.1").WithRuntime(ClrRuntime.Net48).WithId("Nuget Net4.8"));
                 
                 AddJob(baseJob.WithRuntime(ClrRuntime.Net48).WithCustomBuildConfiguration("LOCAL_CODE")
                     .WithId("Local Net4.8")); // custom config to include/exclude nuget reference or target project reference locally
