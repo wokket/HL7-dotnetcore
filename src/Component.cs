@@ -29,14 +29,23 @@ namespace HL7.Dotnetcore
             List<string> allSubComponents;
             
             if (this.isDelimiter)
+#if NET8_0_OR_GREATER
+                allSubComponents = new List<string>([Value]);
+#else
                 allSubComponents = new List<string>(new [] {this.Value});
+#endif
+
             else
                 allSubComponents = MessageHelper.SplitString(_value, this.Encoding.SubComponentDelimiter);
 
             if (allSubComponents.Count > 1)
                 this.IsSubComponentized = true;
 
-            this.SubComponentList = new List<SubComponent>();
+#if NET8_0_OR_GREATER
+            SubComponentList.Clear(); // in case there's existing data in there
+#else
+            SubComponentList = new List<SubComponent>(allSubComponents.Count);
+#endif
 
             foreach (string strSubComponent in allSubComponents)
             {

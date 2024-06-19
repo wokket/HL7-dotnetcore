@@ -48,8 +48,8 @@ namespace HL7.Dotnetcore
 
             if (this.HasRepetitions)
             {
-                _RepetitionList = new List<Field>();
                 List<string> individualFields = MessageHelper.SplitString(_value, this.Encoding.RepeatDelimiter);
+                _RepetitionList = new List<Field>(individualFields.Count);
 
                 for (int index = 0; index < individualFields.Count; index++)
                 {
