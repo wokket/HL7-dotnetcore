@@ -30,9 +30,19 @@ namespace HL7.Dotnetcore
         #endif
         
         
-        
+#if NET8_0
+        [GeneratedRegex(@"^([0-9]+)([\(\[]([0-9]+)[\)\]]){0,1}$")]
+        private static partial Regex FieldRegex();
+#else        
         private const string fieldRegex = @"^([0-9]+)([\(\[]([0-9]+)[\)\]]){0,1}$";
+#endif   
+        
+#if NET8_0
+        [GeneratedRegex(@"""^[1-9]([0-9]{1,2})?$""", RegexOptions.ExplicitCapture)]
+        private static partial Regex OtherRegEx();
+#else
         private const string otherRegEx = @"^[1-9]([0-9]{1,2})?$";
+#endif
 
         public Message()
         {
@@ -718,8 +728,11 @@ namespace HL7.Dotnetcore
         private Field getField(Segment segment, string index)
         {
             int repetition = 0;
+#if NET8_0
+            var matches = FieldRegex().Matches(index);
+#else
             var matches = System.Text.RegularExpressions.Regex.Matches(index, fieldRegex);
-
+#endif
             if (matches.Count < 1)
                 throw new Exception("Invalid field index");
 
@@ -750,8 +763,11 @@ namespace HL7.Dotnetcore
         /// <returns>A boolean indicating whether the field has repetitions</returns>
         private int getFieldRepetitions(Segment segment, string index)
         {
+#if NET8_0
+            var matches = FieldRegex().Matches(index);
+#else
             var matches = System.Text.RegularExpressions.Regex.Matches(index, fieldRegex);
-
+#endif
             if (matches.Count < 1)
                 return 0;
 
@@ -976,12 +992,24 @@ namespace HL7.Dotnetcore
                 {
                     for (int i = 1; i < allComponents.Count; i++)
                     {
+#if NET8_0
+                        if (i == 1 && FieldRegex().IsMatch(allComponents[i]))
+                            isValid = true;
+                        else if (i > 1 && OtherRegEx().IsMatch(allComponents[i]))
+                            isValid = true;
+                        else
+                            return false;
+
+
+#else
                         if (i == 1 && Regex.IsMatch(allComponents[i], fieldRegex))
                             isValid = true;
                         else if (i > 1 && Regex.IsMatch(allComponents[i], otherRegEx))
                             isValid = true;
                         else
                             return false;
+#endif
+
                     }
                 }
                 else
