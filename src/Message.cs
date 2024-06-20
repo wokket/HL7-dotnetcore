@@ -668,12 +668,23 @@ namespace HL7.Dotnetcore
                 var msh = this.SegmentList["MSH"].First();
                 var delim = this.Encoding.FieldDelimiter;
                 
-                response.Append("MSH").Append(this.Encoding.AllDelimiters).Append(delim).Append(msh.FieldList[4].Value).Append(delim).Append(msh.FieldList[5].Value).Append(delim)
-                    .Append(msh.FieldList[2].Value).Append(delim).Append(msh.FieldList[3].Value).Append(delim)
-                    .Append(dateString).Append(delim).Append(delim).Append("ACK").Append(delim).Append(this.MessageControlID).Append(delim)
-                    .Append(this.ProcessingID).Append(delim).Append(this.Version).Append(this.Encoding.SegmentDelimiter);
+                response.Append("MSH").Append(this.Encoding.AllDelimiters).Append(delim)
+                    .Append(msh.FieldList[4].Value).Append(delim)
+                    .Append(msh.FieldList[5].Value).Append(delim)
+                    .Append(msh.FieldList[2].Value).Append(delim)
+                    .Append(msh.FieldList[3].Value).Append(delim)
+                    .Append(dateString).Append(delim)
+                    .Append(delim)
+                    .Append("ACK").Append(delim)
+                    .Append(this.MessageControlID).Append(delim)
+                    .Append(this.ProcessingID).Append(delim)
+                    .Append(this.Version)
+                    .Append(this.Encoding.SegmentDelimiter);
                 
-                response.Append("MSA").Append(delim).Append(code).Append(delim).Append(this.MessageControlID).Append((isNack ? delim + errMsg : string.Empty)).Append(this.Encoding.SegmentDelimiter);
+                response.Append("MSA").Append(delim)
+                    .Append(code).Append(delim)
+                    .Append(this.MessageControlID).Append((isNack ? delim + errMsg : string.Empty))
+                    .Append(this.Encoding.SegmentDelimiter);
             }
             else
             {

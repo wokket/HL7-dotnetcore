@@ -41,11 +41,8 @@ namespace HL7.Dotnetcore
             if (allSubComponents.Count > 1)
                 this.IsSubComponentized = true;
 
-#if NET8_0_OR_GREATER
             SubComponentList.Clear(); // in case there's existing data in there
-#else
-            SubComponentList = new List<SubComponent>(allSubComponents.Count);
-#endif
+            SubComponentList.Capacity = allSubComponents.Count;
 
             foreach (string strSubComponent in allSubComponents)
             {
