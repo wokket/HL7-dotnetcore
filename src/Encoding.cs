@@ -39,8 +39,8 @@ namespace HL7.Dotnetcore
             }
         }
 
-#if NET8_0
-        private static readonly string[] _segmentDelimiters = ["\r\n", "\n\r", "\r", "\n"];
+
+        private static readonly string[] _segmentDelimiters = new string[] { "\r\n", "\n\r", "\r", "\n" };
         public void EvaluateSegmentDelimiter(string message)
         {
             foreach (var delim in _segmentDelimiters)
@@ -54,24 +54,6 @@ namespace HL7.Dotnetcore
 
             throw new HL7Exception("Segment delimiter not found in message", HL7Exception.BAD_MESSAGE);
         }
-#else
-        public void EvaluateSegmentDelimiter(string message)
-        {
-            string[] delimiters = new[] { "\r\n", "\n\r", "\r", "\n" };
-
-            foreach (var delim in delimiters)
-            {
-                if (message.Contains(delim))
-                {
-                    this.SegmentDelimiter = delim;
-                    return;
-                }
-            }
-
-            throw new HL7Exception("Segment delimiter not found in message", HL7Exception.BAD_MESSAGE);
-        }
-#endif
-
 
         // Encoding methods based on https://github.com/elomagic/hl7inspector
 
@@ -181,13 +163,11 @@ namespace HL7.Dotnetcore
                 return encodedValue;
             
             //not strictly a net8 change, but helps separate 'before' perf from these changes
-            #if NET8_0
             if (!encodedValue.Contains(EscapeCharacter))
             {
                 // no need to decode, just return as is
                 return encodedValue;
             }
-            #endif
 
             var result = new StringBuilder();
 
