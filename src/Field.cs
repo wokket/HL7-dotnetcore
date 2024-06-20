@@ -20,7 +20,7 @@ namespace HL7.Dotnetcore
             {
                 if (_RepetitionList == null)
                     _RepetitionList = new List<Field>();
-                    
+
                 return _RepetitionList;
             }
             set
@@ -173,14 +173,15 @@ namespace HL7.Dotnetcore
                 throw new HL7Exception("Error removing trailing components - " + ex.Message, ex);
             }
         }
-        public void AddRepeatingField(Field field) {
-            if (!this.HasRepetitions) 
+        public void AddRepeatingField(Field field)
+        {
+            if (!this.HasRepetitions)
             {
                 throw new HL7Exception("Repeating field must have repetitions (HasRepetitions = true)");
             }
-            if (_RepetitionList == null) 
+            if (_RepetitionList == null)
             {
-                _RepetitionList = new List<Field>(); 
+                _RepetitionList = new List<Field>();
             }
             _RepetitionList.Add(field);
         }

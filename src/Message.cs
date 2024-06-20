@@ -244,18 +244,26 @@ namespace HL7.Dotnetcore
             int componentIndex = 0;
             int subComponentIndex = 0;
             string strValue = string.Empty;
-            List<string> allComponents = MessageHelper.SplitString(strValueFormat, new char[] { '.' });
 
+#if NET8_0_OR_GREATER
+
+            Span<Range> allComponents = new Range[5];
+            var comCount = strValueFormat.AsSpan().Split(allComponents, '.');
+            bool isValid = ValidateValueFormat(allComponents[..comCount], strValueFormat);
+#else
+            List<string> allComponents = MessageHelper.SplitString(strValueFormat, new char[] { '.' });
             int comCount = allComponents.Count;
             bool isValid = ValidateValueFormat(allComponents);
+#endif
+
 
             if (isValid)
             {
-                #if NET8_0
-                var matches = SegmentRegex().Matches(allComponents[0]);
-                #else 
+#if NET8_0
+                var matches = SegmentRegex().Matches(strValueFormat[allComponents[0]]);
+#else
                 var matches = System.Text.RegularExpressions.Regex.Matches(allComponents[0], segmentRegex);
-                #endif
+#endif
                 
                 if (matches.Count < 1)
                     throw new HL7Exception("Request format is not valid: " + strValueFormat);
@@ -274,12 +282,22 @@ namespace HL7.Dotnetcore
 
                     if (comCount == 4)
                     {
+#if NET8_0_OR_GREATER
+                        Int32.TryParse(strValueFormat[allComponents[2]], out componentIndex);
+                        Int32.TryParse(strValueFormat[allComponents[3]], out subComponentIndex);
+#else
                         Int32.TryParse(allComponents[2], out componentIndex);
                         Int32.TryParse(allComponents[3], out subComponentIndex);
+#endif
 
                         try
                         {
+#if NET8_0_OR_GREATER
+                            var field = this.getField(segment, strValueFormat[allComponents[1]]);
+#else
                             var field = this.getField(segment, allComponents[1]);
+#endif
+
                             strValue = field.ComponentList[componentIndex - 1].SubComponentList[subComponentIndex - 1].Value;
                         }
                         catch (Exception ex)
@@ -289,11 +307,20 @@ namespace HL7.Dotnetcore
                     }
                     else if (comCount == 3)
                     {
+#if NET8_0_OR_GREATER
+                        Int32.TryParse(strValueFormat[allComponents[2]], out componentIndex);
+#else
                         Int32.TryParse(allComponents[2], out componentIndex);
+#endif
 
                         try
                         {
+#if NET8_0_OR_GREATER
+                            var field = this.getField(segment, strValueFormat[allComponents[1]]);
+#else
                             var field = this.getField(segment, allComponents[1]);
+#endif
+
                             strValue = field.ComponentList[componentIndex - 1].Value;
                         }
                         catch (Exception ex)
@@ -305,7 +332,11 @@ namespace HL7.Dotnetcore
                     {
                         try
                         {
+#if NET8_0_OR_GREATER
+                            var field = this.getField(segment, strValueFormat[allComponents[1]]);
+#else
                             var field = this.getField(segment, allComponents[1]);
+#endif
                             strValue = field.Value;
                         }
                         catch (Exception ex)
@@ -695,12 +726,23 @@ namespace HL7.Dotnetcore
                 var msh = this.SegmentList["MSH"].First();
                 var delim = this.Encoding.FieldDelimiter;
                 
-                response.Append("MSH").Append(this.Encoding.AllDelimiters).Append(delim).Append(msh.FieldList[4].Value).Append(delim).Append(msh.FieldList[5].Value).Append(delim)
-                    .Append(msh.FieldList[2].Value).Append(delim).Append(msh.FieldList[3].Value).Append(delim)
-                    .Append(dateString).Append(delim).Append(delim).Append("ACK").Append(delim).Append(this.MessageControlID).Append(delim)
-                    .Append(this.ProcessingID).Append(delim).Append(this.Version).Append(this.Encoding.SegmentDelimiter);
+                response.Append("MSH").Append(this.Encoding.AllDelimiters).Append(delim)
+                    .Append(msh.FieldList[4].Value).Append(delim)
+                    .Append(msh.FieldList[5].Value).Append(delim)
+                    .Append(msh.FieldList[2].Value).Append(delim)
+                    .Append(msh.FieldList[3].Value).Append(delim)
+                    .Append(dateString).Append(delim)
+                    .Append(delim)
+                    .Append("ACK").Append(delim)
+                    .Append(this.MessageControlID).Append(delim)
+                    .Append(this.ProcessingID).Append(delim)
+                    .Append(this.Version)
+                    .Append(this.Encoding.SegmentDelimiter);
                 
-                response.Append("MSA").Append(delim).Append(code).Append(delim).Append(this.MessageControlID).Append((isNack ? delim + errMsg : string.Empty)).Append(this.Encoding.SegmentDelimiter);
+                response.Append("MSA").Append(delim)
+                    .Append(code).Append(delim)
+                    .Append(this.MessageControlID).Append((isNack ? delim + errMsg : string.Empty))
+                    .Append(this.Encoding.SegmentDelimiter);
             }
             else
             {
@@ -1020,5 +1062,39 @@ namespace HL7.Dotnetcore
 
             return isValid;
         }
+
+#if NET8_0_OR_GREATER
+        /// <summary>
+        /// Validates the components of a value's position descriptor
+        /// </summary>
+        /// <returns>A boolean indicating whether all the components are valid or not</returns>
+        private bool ValidateValueFormat(ReadOnlySpan<Range> allComponents, string src)
+        {
+            bool isValid = false;
+
+            if (allComponents.Length > 0)
+            {
+                if (SegmentRegex().IsMatch(src[allComponents[0]]))
+                {
+                    for (int i = 1; i < allComponents.Length; i++)
+                    {
+                        if (i == 1 && FieldRegex().IsMatch(src[allComponents[i]]))
+                            isValid = true;
+                        else if (i > 1 && OtherRegEx().IsMatch(src[allComponents[i]]))
+                            isValid = true;
+                        else
+                            return false;
+                    }
+                }
+                else
+                {
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+#endif
+
     }
 }
