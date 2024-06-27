@@ -968,5 +968,40 @@ PV1|1|I|2000^2012^01||||004777^CASTRO^FRANK^J.|||SUR||||ADM|A0";
 
             Assert.IsTrue(isParsed);
         }
+
+       [TestMethod]
+        public void DecodeBrokenCharMessage()
+        {
+            var sampleMessage = @"MSH|^~\&|ADT1|MCM|FINGER|MCM|198808181126|SECURITY|ADT^A01|MSG00001|P|2.3.1
+EVN|A01|198808181123
+PID|1||PATID1234^5^M11^ADT1^MR^MCM~123456789^\E\^^USSSA^SS||fake^fakey^A^III||19610615|M||C|9999 N FAKE STREET^^FAKESTAR^TN^99999?1020|GL|(999)999?1212|(999)999?3333||S||PATID12345001^2^M10^ADT1^AN^A|123456789|987654^NC
+NK1|1|FAKE^KAKIER^K|WI^WIFE||||NK^NEXT OF KIN
+PV1|1|I|1999^2012^01||||004777^FAKES^FAKESSSS^J.|||SUR||||ADM|A0";
+
+            var message = new Message(sampleMessage);
+            message.ParseMessage();
+
+            var field = message.GetValue("PID.5");
+            var component = message.GetValue("PID.5.1");
+            var subcomponent = message.GetValue("PID.5.1.1");
+
+            Assert.AreEqual(component, subcomponent);
+            Assert.IsTrue(field.StartsWith(component));
+        }
+
+        [TestMethod]
+        public void ParseBrokenCharMessage()
+        {
+            var sampleMessage = @"MSH|^~\&|ADT1|MCM|FINGER|MCM|198808181126|SECURITY|ADT^A01|MSG00001|P|2.3.1
+EVN|A01|198808181123
+PID|1||PATID1234^5^M11^ADT1^MR^MCM~123456789^\E\^^USSSA^SS||fake^fakey^A^III||19610615|M||C|9999 N FAKE STREET^^FAKESTAR^TN^99999?1020|GL|(999)999?1212|(999)999?3333||S||PATID12345001^2^M10^ADT1^AN^A|123456789|987654^NC
+NK1|1|FAKE^KAKIER^K|WI^WIFE||||NK^NEXT OF KIN
+PV1|1|I|1999^2012^01||||004777^FAKES^FAKESSSS^J.|||SUR||||ADM|A0";
+
+            var message = new Message(sampleMessage);
+
+            var isParsed = message.ParseMessage();
+            Assert.IsTrue(isParsed);
+        }        
     }
 }
