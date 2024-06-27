@@ -20,7 +20,7 @@ namespace HL7.Dotnetcore
         public int SegmentCount { get; set; }
         public HL7Encoding Encoding { get; set; } = new HL7Encoding();
 
-        
+        private static char _queryDelimiter =  '.';
         
 #if NET8_0_OR_GREATER
         [GeneratedRegex(@"^([A-Z][A-Z][A-Z1-9])([\(\[]([0-9]+)[\)\]]){0,1}$")]
@@ -251,8 +251,8 @@ namespace HL7.Dotnetcore
             var comCount = strValueFormat.AsSpan().Split(allComponents, '.');
             bool isValid = ValidateValueFormat(allComponents[..comCount], strValueFormat);
 #else
-            List<string> allComponents = MessageHelper.SplitString(strValueFormat, new char[] { '.' });
-            int comCount = allComponents.Count;
+            var allComponents = MessageHelper.SplitString(strValueFormat, _queryDelimiter);
+            int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
 #endif
 
@@ -381,8 +381,8 @@ namespace HL7.Dotnetcore
             string segmentName = string.Empty;
             int componentIndex = 0;
             int subComponentIndex = 0;
-            List<string> allComponents = MessageHelper.SplitString(strValueFormat, new char[] { '.' });
-            int comCount = allComponents.Count;
+            var allComponents = MessageHelper.SplitString(strValueFormat, _queryDelimiter);
+            int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
@@ -462,8 +462,8 @@ namespace HL7.Dotnetcore
         {
             bool isComponentized = false;
             string segmentName = string.Empty;
-            List<string> allComponents = MessageHelper.SplitString(strValueFormat, new char[] { '.' });
-            int comCount = allComponents.Count;
+            var allComponents = MessageHelper.SplitString(strValueFormat, _queryDelimiter);
+            int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
@@ -502,8 +502,8 @@ namespace HL7.Dotnetcore
         {
             string segmentName = string.Empty;
 
-            List<string> allComponents = MessageHelper.SplitString(strValueFormat, new char[] { '.' });
-            int comCount = allComponents.Count;
+            var allComponents = MessageHelper.SplitString(strValueFormat, _queryDelimiter);
+            int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
@@ -540,8 +540,8 @@ namespace HL7.Dotnetcore
             bool isSubComponentized = false;
             string segmentName = string.Empty;
             int componentIndex = 0;
-            List<string> allComponents = MessageHelper.SplitString(strValueFormat, new char[] { '.' });
-            int comCount = allComponents.Count;
+            var allComponents = MessageHelper.SplitString(strValueFormat, _queryDelimiter);
+            int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
@@ -891,7 +891,7 @@ namespace HL7.Dotnetcore
                     // Find Message Version
                     var MSHFields = MessageHelper.SplitString(this.allSegments[0], Encoding.FieldDelimiter);
 
-                    if (MSHFields.Count >= 12)
+                    if (MSHFields.Length >= 12)
                     {
                         this.Version = MessageHelper.SplitString(this.Encoding.Decode(MSHFields[11]), Encoding.ComponentDelimiter)[0];
                     }
@@ -909,15 +909,15 @@ namespace HL7.Dotnetcore
                         {
                             var MSH_9_comps = MessageHelper.SplitString(MSH_9, this.Encoding.ComponentDelimiter);
 
-                            if (MSH_9_comps.Count >= 3)
+                            if (MSH_9_comps.Length >= 3)
                             {
                                 this.MessageStructure = MSH_9_comps[2];
                             }
-                            else if (MSH_9_comps.Count > 0 && MSH_9_comps[0] != null && MSH_9_comps[0].Equals("ACK"))
+                            else if (MSH_9_comps.Length > 0 && MSH_9_comps[0] != null && MSH_9_comps[0].Equals("ACK"))
                             {
                                 this.MessageStructure = "ACK";
                             }
-                            else if (MSH_9_comps.Count == 2)
+                            else if (MSH_9_comps.Length == 2)
                             {
                                 this.MessageStructure = MSH_9_comps[0] + "_" + MSH_9_comps[1];
                             }
@@ -1019,11 +1019,11 @@ namespace HL7.Dotnetcore
         /// Validates the components of a value's position descriptor
         /// </summary>
         /// <returns>A boolean indicating whether all the components are valid or not</returns>
-        private bool ValidateValueFormat(List<string> allComponents)
+        private bool ValidateValueFormat(string[] allComponents)
         {
             bool isValid = false;
 
-            if (allComponents.Count > 0)
+            if (allComponents.Length > 0)
             {
 
 #if NET8_0_OR_GREATER
@@ -1032,7 +1032,7 @@ namespace HL7.Dotnetcore
                 if (Regex.IsMatch(allComponents[0], segmentRegex))
 #endif
                 {
-                    for (int i = 1; i < allComponents.Count; i++)
+                    for (int i = 1; i < allComponents.Length; i++)
                     {
 #if NET8_0_OR_GREATER
                         if (i == 1 && FieldRegex().IsMatch(allComponents[i]))

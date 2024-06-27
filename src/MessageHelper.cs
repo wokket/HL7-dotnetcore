@@ -9,26 +9,26 @@ namespace HL7.Dotnetcore
 {
     public static class MessageHelper
     {
-        private static string[] lineSeparators = { "\r\n", "\n\r", "\r", "\n" };
+        private static readonly string[] _lineSeparators = { "\r\n", "\n\r", "\r", "\n" };
 
-        public static List<string> SplitString(string strStringToSplit, string splitBy, StringSplitOptions splitOptions = StringSplitOptions.None)
+        public static string[] SplitString(string strStringToSplit, string splitBy, StringSplitOptions splitOptions = StringSplitOptions.None)
         {
-            return strStringToSplit.Split(new string[] { splitBy }, splitOptions).ToList();
+            return strStringToSplit.Split(new [] { splitBy }, splitOptions);
         }
 
-        public static List<string> SplitString(string strStringToSplit, char chSplitBy, StringSplitOptions splitOptions = StringSplitOptions.None)
+        public static string[] SplitString(string strStringToSplit, char chSplitBy, StringSplitOptions splitOptions = StringSplitOptions.None)
         {
-            return strStringToSplit.Split(new char[] { chSplitBy }, splitOptions).ToList();
+            return strStringToSplit.Split(new char[] { chSplitBy }, splitOptions);
         }
 
-        public static List<string> SplitString(string strStringToSplit, char[] chSplitBy, StringSplitOptions splitOptions = StringSplitOptions.None)
+        public static string[] SplitString(string strStringToSplit, char[] chSplitBy, StringSplitOptions splitOptions = StringSplitOptions.None)
         {
-            return strStringToSplit.Split(chSplitBy, splitOptions).ToList();
+            return strStringToSplit.Split(chSplitBy, splitOptions);
         }
 
         public static List<string> SplitMessage(string message)
         {
-            return message.Split(lineSeparators, StringSplitOptions.None).Where(m => !string.IsNullOrWhiteSpace(m)).ToList();
+            return message.Split(_lineSeparators, StringSplitOptions.None).Where(m => !string.IsNullOrWhiteSpace(m)).ToList();
         }
 
         public static string LongDateWithFractionOfSecond(DateTime dt)

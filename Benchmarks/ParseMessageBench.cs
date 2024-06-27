@@ -3,6 +3,7 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
 using HL7.Dotnetcore;
+using System.IO;
 
 namespace Benchmarks
 {
@@ -16,49 +17,38 @@ namespace Benchmarks
     public class ParseMessageBench
     {
 /*
-// After Segment Regex
-| Method       | Job          | Mean     | Error     | StdDev   | Ratio | RatioSD | Gen0    | Gen1   | Allocated | Alloc Ratio |
-|------------- |------------- |---------:|----------:|---------:|------:|--------:|--------:|-------:|----------:|------------:|
-| ParseMessage | Local Net4.8 | 53.76 us | 58.786 us | 3.222 us |  1.91 |    0.12 | 23.6816 | 2.0142 | 145.68 KB |        1.27 |
-| ParseMessage | Local Net8   | 24.78 us |  7.183 us | 0.394 us |  0.88 |    0.01 |  6.5918 | 0.6104 | 101.41 KB |        0.89 |
-| ParseMessage | Nuget Net4.8 | 51.63 us | 21.251 us | 1.165 us |  1.84 |    0.02 | 23.6816 | 2.0142 | 145.69 KB |        1.27 |
-| ParseMessage | Nuget Net8   | 28.12 us |  5.295 us | 0.290 us |  1.00 |    0.00 |  7.4768 | 0.7019 | 114.51 KB |        1.00 |
+| Method                   | Job          | Mean     | Error     | StdDev   | Ratio | RatioSD | Gen0    | Gen1   | Allocated | Alloc Ratio |
+|------------------------- |------------- |---------:|----------:|---------:|------:|--------:|--------:|-------:|----------:|------------:|
+| ParseMessageAndGetValues | Local Net4.8 | 93.15 us | 16.535 us | 0.906 us |  1.86 |    0.01 | 38.5742 | 5.6152 | 237.34 KB |        1.12 |
+| ParseMessageAndGetValues | Local Net8   | 40.62 us |  8.698 us | 0.477 us |  0.81 |    0.01 | 11.1084 | 1.7090 | 170.15 KB |        0.81 |
+| ParseMessageAndGetValues | Nuget Net4.8 | 94.37 us |  4.109 us | 0.225 us |  1.88 |    0.03 | 44.4336 | 6.8359 | 273.49 KB |        1.30 |
+| ParseMessageAndGetValues | Nuget Net8   | 50.08 us | 14.270 us | 0.782 us |  1.00 |    0.00 | 13.7329 | 2.1973 | 211.17 KB |        1.00 |
+
  */
+
+        private readonly string _sampleMessage = File.ReadAllText("Sample-Orm.txt");
 
         private class Config : ManualConfig
         {
             public Config()
             {
                 var baseJob = Job.ShortRun;
-                // WithOptions(ConfigOptions.DisableOptimizationsValidator);
-                // AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.0").WithRuntime(ClrRuntime.Net48).WithId("Nuget Net4.8"));
-                // AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.0").WithRuntime(CoreRuntime.Core80).WithId("Nuget Net8").AsBaseline());
-                //
+
                 AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.1").WithRuntime(CoreRuntime.Core80).WithId("Nuget Net8").AsBaseline());
                 AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.1").WithRuntime(ClrRuntime.Net48).WithId("Nuget Net4.8"));
-                
+
                 AddJob(baseJob.WithRuntime(ClrRuntime.Net48).WithCustomBuildConfiguration("LOCAL_CODE")
                     .WithId("Local Net4.8")); // custom config to include/exclude nuget reference or target project reference locally
-                
+
                 AddJob(baseJob.WithRuntime(CoreRuntime.Core80).WithCustomBuildConfiguration("LOCAL_CODE")
                     .WithId("Local Net8")); // custom config to include/exclude nuget reference or target project reference locally
             }
         }
 
         [Benchmark]
-        public void ParseMessage()
+        public void ParseMessageAndGetValues()
         {
-            //_testHarness.BypassValidationGetACK();
-            BypassValidationGetACK();
-        }
-
-        private void BypassValidationGetACK()
-        {
-            string sampleMessage = @"MSH|^~\&|SCA|SCA|LIS|LIS|202107300000||ORU^R01||P|2.4|||||||
-PID|1|1234|1234||JOHN^DOE||19000101||||||||||||||
-OBR|1|1234|1234||||20210708|||||||||||||||20210708||||||||||
-OBX|1|TX|SCADOCTOR||^||||||F";
-            var msg = new Message(sampleMessage);
+            var msg = new Message(_sampleMessage);
             msg.ParseMessage(true);
 
             var ack = msg.GetACK(true);
