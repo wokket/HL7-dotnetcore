@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HL7.Dotnetcore
 {
@@ -25,7 +26,7 @@ namespace HL7.Dotnetcore
 
         protected override void ProcessValue()
         {
-            List<string> allFields = MessageHelper.SplitString(_value, this.Encoding.FieldDelimiter);
+            var allFields = MessageHelper.SplitString(_value, this.Encoding.FieldDelimiter).ToList();
 
             allFields.RemoveAt(0);
             

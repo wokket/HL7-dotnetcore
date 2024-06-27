@@ -324,7 +324,7 @@ namespace HL7.Dotnetcore
             int componentIndex = 0;
             int subComponentIndex = 0;
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
-            int comCount = allComponents.Count;
+            int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
@@ -405,7 +405,7 @@ namespace HL7.Dotnetcore
             bool isComponentized = false;
             string segmentName = string.Empty;
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
-            int comCount = allComponents.Count;
+            int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
@@ -444,7 +444,7 @@ namespace HL7.Dotnetcore
         public bool HasRepetitions(string strValueFormat)
         {
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
-            int comCount = allComponents.Count;
+            int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
@@ -482,7 +482,7 @@ namespace HL7.Dotnetcore
             string segmentName = string.Empty;
             int componentIndex = 0;
             List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
-            int comCount = allComponents.Count;
+            int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
 
             if (isValid)
@@ -812,7 +812,7 @@ namespace HL7.Dotnetcore
                     // Find Message Version
                     var MSHFields = MessageHelper.SplitString(this.allSegments[0], Encoding.FieldDelimiter);
 
-                    if (MSHFields.Count >= 12)
+                    if (MSHFields.Length >= 12)
                         this.Version = MessageHelper.SplitString(this.Encoding.Decode(MSHFields[11]), Encoding.ComponentDelimiter)[0];
                     else
                         throw new HL7Exception("HL7 version not found in the MSH segment", HL7Exception.REQUIRED_FIELD_MISSING);
@@ -826,11 +826,11 @@ namespace HL7.Dotnetcore
                         {
                             var MSH_9_comps = MessageHelper.SplitString(MSH_9, this.Encoding.ComponentDelimiter);
 
-                            if (MSH_9_comps.Count >= 3)
+                            if (MSH_9_comps.Length >= 3)
                                 this.MessageStructure = MSH_9_comps[2];
-                            else if (MSH_9_comps.Count > 0 && MSH_9_comps[0] != null && MSH_9_comps[0].Equals("ACK"))
+                            else if (MSH_9_comps.Length > 0 && MSH_9_comps[0] != null && MSH_9_comps[0].Equals("ACK"))
                                 this.MessageStructure = "ACK";
-                            else if (MSH_9_comps.Count == 2)
+                            else if (MSH_9_comps.Length == 2)
                                 this.MessageStructure = MSH_9_comps[0] + "_" + MSH_9_comps[1];
                             else
                                 throw new HL7Exception("Message Type & Trigger Event value not found in message", HL7Exception.UNSUPPORTED_MESSAGE_TYPE);
@@ -930,15 +930,15 @@ namespace HL7.Dotnetcore
         /// Validates the components of a value's position descriptor
         /// </summary>
         /// <returns>A boolean indicating whether all the components are valid or not</returns>
-        private bool ValidateValueFormat(List<string> allComponents)
+        private bool ValidateValueFormat(string[] allComponents)
         {
             bool isValid = false;
 
-            if (allComponents.Count > 0)
+            if (allComponents.Length > 0)
             {
                 if (Regex.IsMatch(allComponents[0], segmentRegex))
                 {
-                    for (int i = 1; i < allComponents.Count; i++)
+                    for (int i = 1; i < allComponents.Length; i++)
                     {
                         if (i == 1 && Regex.IsMatch(allComponents[i], fieldRegex))
                             isValid = true;

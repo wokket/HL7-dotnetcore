@@ -26,23 +26,23 @@ namespace HL7.Dotnetcore
 
         protected override void ProcessValue()
         {
-            List<string> allSubComponents;
+            string[] allSubComponents;
             
             if (this.isDelimiter)
 #if NET8_0_OR_GREATER
-                allSubComponents = new List<string>([Value]);
+                allSubComponents = [Value];
 #else
-                allSubComponents = new List<string>(new [] {this.Value});
+                allSubComponents = new [] {Value};
 #endif
 
             else
                 allSubComponents = MessageHelper.SplitString(_value, this.Encoding.SubComponentDelimiter);
 
-            if (allSubComponents.Count > 1)
+            if (allSubComponents.Length > 1)
                 this.IsSubComponentized = true;
 
             SubComponentList.Clear(); // in case there's existing data in there
-            SubComponentList.Capacity = allSubComponents.Count;
+            SubComponentList.Capacity = allSubComponents.Length;
 
             foreach (string strSubComponent in allSubComponents)
             {

@@ -28,6 +28,8 @@ namespace Benchmarks
 | ParseMessageAndGetValues | Nuget Net8   | 52.39 us |  6.528 us | 0.358 us |  1.00 |    0.00 | 13.7329 | 2.3193 | 211.17 KB |        1.00 |
  */
 
+        private readonly string _sampleMessage = File.ReadAllText("Sample-Orm.txt");
+
         private class Config : ManualConfig
         {
             public Config()
