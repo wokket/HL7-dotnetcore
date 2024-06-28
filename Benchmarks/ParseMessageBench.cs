@@ -17,12 +17,13 @@ namespace Benchmarks
     public class ParseMessageBench
     {
 /*
+
 | Method                   | Job          | Mean     | Error     | StdDev   | Ratio | RatioSD | Gen0    | Gen1   | Allocated | Alloc Ratio |
 |------------------------- |------------- |---------:|----------:|---------:|------:|--------:|--------:|-------:|----------:|------------:|
-| ParseMessageAndGetValues | Local Net4.8 | 93.15 us | 16.535 us | 0.906 us |  1.86 |    0.01 | 38.5742 | 5.6152 | 237.34 KB |        1.12 |
-| ParseMessageAndGetValues | Local Net8   | 40.62 us |  8.698 us | 0.477 us |  0.81 |    0.01 | 11.1084 | 1.7090 | 170.15 KB |        0.81 |
-| ParseMessageAndGetValues | Nuget Net4.8 | 94.37 us |  4.109 us | 0.225 us |  1.88 |    0.03 | 44.4336 | 6.8359 | 273.49 KB |        1.30 |
-| ParseMessageAndGetValues | Nuget Net8   | 50.08 us | 14.270 us | 0.782 us |  1.00 |    0.00 | 13.7329 | 2.1973 | 211.17 KB |        1.00 |
+| ParseMessageAndGetValues | Local Net4.8 | 76.92 us |  2.737 us | 0.150 us |  1.57 |    0.03 | 34.6680 | 5.0049 | 213.52 KB |        1.01 |
+| ParseMessageAndGetValues | Local Net8   | 33.03 us |  1.697 us | 0.093 us |  0.67 |    0.01 |  9.7046 | 1.5259 | 149.35 KB |        0.71 |
+| ParseMessageAndGetValues | Nuget Net4.8 | 93.29 us |  4.798 us | 0.263 us |  1.90 |    0.03 | 44.4336 | 6.8359 | 273.48 KB |        1.30 |
+| ParseMessageAndGetValues | Nuget Net8   | 49.06 us | 15.435 us | 0.846 us |  1.00 |    0.00 | 13.7329 | 2.2583 | 211.17 KB |        1.00 |
 
  */
 
