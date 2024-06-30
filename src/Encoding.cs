@@ -6,13 +6,13 @@ namespace HL7.Dotnetcore
 {
     public class HL7Encoding
     {
-        public char FieldDelimiter { get; set; } = '|'; // \F\
-        public char ComponentDelimiter { get; set; } = '^'; // \S\
-        public char RepeatDelimiter { get; set; } = '~';  // \R\
-        public char EscapeCharacter { get; set; } = '\\'; // \E\
+        public char FieldDelimiter { get; set; } = '|';        // \F\
+        public char ComponentDelimiter { get; set; } = '^';    // \S\
+        public char RepeatDelimiter { get; set; } = '~';       // \R\
+        public char EscapeCharacter { get; set; } = '\\';      // \E\
         public char SubComponentDelimiter { get; set; } = '&'; // \T\
-        public string SegmentDelimiter { get; set; } = "\r";
-        public string PresentButNull { get; set; } = "\"\"";
+        public string SegmentDelimiter { get; set; } = "\r";   // {cr}
+        public string PresentButNull { get; set; } = "\"\"";   // ""
         public string AllDelimiters => "" + FieldDelimiter + ComponentDelimiter + RepeatDelimiter + (EscapeCharacter == (char)0 ? "" : EscapeCharacter.ToString()) + SubComponentDelimiter;
 
         public HL7Encoding()
@@ -36,16 +36,16 @@ namespace HL7.Dotnetcore
                 this.SubComponentDelimiter = delimiters[4];
             }
         }
-
+        
+        private static readonly string[] _delimiters = { "\r\n", "\n\r", "\r", "\n" };
+        
         public void EvaluateSegmentDelimiter(string message)
         {
-            string[] delimiters = new[] { "\r\n", "\n\r", "\r", "\n" };
-
-            foreach (var delim in delimiters)
+            foreach (var delim in _delimiters)
             {
                 if (message.Contains(delim))
                 {
-                    this.SegmentDelimiter = delim;
+                    SegmentDelimiter = delim;
                     return;
                 }
             }
@@ -98,7 +98,9 @@ namespace HL7.Dotnetcore
                         i += 3; // +1 in loop
                     }
                     else
+                    {
                         continueEncoding = true;
+                    }
                 }
                 
                 if (continueEncoding)
@@ -159,6 +161,12 @@ namespace HL7.Dotnetcore
         {
             if (string.IsNullOrWhiteSpace(encodedValue))
                 return encodedValue;
+            
+            if (!encodedValue.Contains(EscapeCharacter))
+            {
+                // no need to decode, just return as is
+                return encodedValue;
+            }
 
             var result = new StringBuilder();
 
@@ -182,7 +190,6 @@ namespace HL7.Dotnetcore
                     result.Append(encodedValue[i]);
                     continue;
                 }
-                
 
                 string seq = encodedValue.Substring(i, li-i);
                 i = li;

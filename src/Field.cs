@@ -35,7 +35,7 @@ namespace HL7.Dotnetcore
             {
                 var subcomponent = new SubComponent(_value, this.Encoding);
 
-                this.ComponentList = new ComponentCollection();
+                this.ComponentList.Clear();
                 Component component = new Component(this.Encoding, true);
 
                 component.SubComponentList.Add(subcomponent);
@@ -61,7 +61,7 @@ namespace HL7.Dotnetcore
             {
                 List<string> allComponents = MessageHelper.SplitString(_value, this.Encoding.ComponentDelimiter);
 
-                this.ComponentList = new ComponentCollection();
+                this.ComponentList = new ComponentCollection(allComponents.Count);
 
                 foreach (string strComponent in allComponents)
                 {
@@ -135,18 +135,16 @@ namespace HL7.Dotnetcore
         public List<Field> Repetitions()
         {
             if (this.HasRepetitions)
-            {
                 return RepetitionList;
-            }
+
             return null;
         }
 
         public Field Repetitions(int repetitionNumber)
         {
             if (this.HasRepetitions)
-            {
                 return RepetitionList[repetitionNumber - 1];
-            }
+
             return null;
         }
 
@@ -169,15 +167,14 @@ namespace HL7.Dotnetcore
                 throw new HL7Exception("Error removing trailing components - " + ex.Message, ex);
             }
         }
-        public void AddRepeatingField(Field field) {
+        public void AddRepeatingField(Field field) 
+        {
             if (!this.HasRepetitions) 
-            {
                 throw new HL7Exception("Repeating field must have repetitions (HasRepetitions = true)");
-            }
+
             if (_RepetitionList == null) 
-            {
                 _RepetitionList = new List<Field>(); 
-            }
+
             _RepetitionList.Add(field);
         }
     }
