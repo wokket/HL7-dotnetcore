@@ -17,15 +17,14 @@ namespace Benchmarks
     [HideColumns("BuildConfiguration", "NuGetReferences", "Runtime")]
     public class ParseMessageBench
     {
-        private readonly string _sampleMessage = File.ReadAllText("Sample-Orm.txt");
 
 /*
 | Method                   | Job          | Mean     | Error     | StdDev   | Ratio | RatioSD | Gen0    | Gen1   | Allocated | Alloc Ratio |
 |------------------------- |------------- |---------:|----------:|---------:|------:|--------:|--------:|-------:|----------:|------------:|
-| ParseMessageAndGetValues | Local Net4.8 | 77.00 us |  1.445 us | 0.079 us |  1.56 |    0.01 | 34.6680 | 4.8828 | 213.45 KB |        1.01 |
-| ParseMessageAndGetValues | Local Net8   | 39.85 us | 25.689 us | 1.408 us |  0.81 |    0.03 | 10.1318 | 1.5259 | 155.77 KB |        0.74 |
-| ParseMessageAndGetValues | Nuget Net4.8 | 94.81 us |  9.418 us | 0.516 us |  1.92 |    0.02 | 44.4336 | 6.8359 | 273.47 KB |        1.30 |
-| ParseMessageAndGetValues | Nuget Net8   | 49.49 us |  6.800 us | 0.373 us |  1.00 |    0.00 | 13.7329 | 2.2583 | 211.17 KB |        1.00 |
+| ParseMessageAndGetValues | Local Net4.8 | 78.31 us |  2.469 us | 0.135 us |  1.53 |    0.01 | 34.6680 | 4.7607 | 213.45 KB |        1.01 |
+| ParseMessageAndGetValues | Local Net8   | 39.71 us | 15.809 us | 0.867 us |  0.77 |    0.02 | 10.1318 | 1.5259 | 155.77 KB |        0.74 |
+| ParseMessageAndGetValues | Nuget Net4.8 | 95.97 us | 20.101 us | 1.102 us |  1.87 |    0.02 | 44.4336 | 6.7139 | 273.47 KB |        1.30 |
+| ParseMessageAndGetValues | Nuget Net8   | 51.33 us |  7.491 us | 0.411 us |  1.00 |    0.00 | 13.7329 | 2.2583 | 211.17 KB |        1.00 |
  */
 
         private readonly string _sampleMessage = File.ReadAllText("Sample-Orm.txt");

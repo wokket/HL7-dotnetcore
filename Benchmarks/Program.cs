@@ -9,6 +9,6 @@ internal class Program
 {
     public static void Main(string[] args)
     {
-        BenchmarkSwitcher.FromAssembly(typeof(ParseOrmBench).Assembly).Run(args);
+        BenchmarkSwitcher.FromAssembly(typeof(ParseMessageBench).Assembly).Run(args);
     }
 }

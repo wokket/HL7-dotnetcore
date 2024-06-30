@@ -446,7 +446,7 @@ namespace HL7.Dotnetcore
         /// <returns>boolean</returns>
         public bool HasRepetitions(string strValueFormat)
         {
-            List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
+            var allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
             int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
 
