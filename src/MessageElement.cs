@@ -5,7 +5,7 @@ namespace HL7.Dotnetcore
         protected string _value = string.Empty;
        
         
-        public  string Value 
+        public string Value 
         { 
             get 
             {
@@ -18,7 +18,7 @@ namespace HL7.Dotnetcore
             }
         }
 
-        public  string UndecodedValue 
+        public string UndecodedValue 
         { 
             get 
             {

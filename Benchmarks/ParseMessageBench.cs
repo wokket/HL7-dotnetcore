@@ -22,10 +22,10 @@ namespace Benchmarks
 /*
 | Method                   | Job          | Mean     | Error     | StdDev   | Ratio | RatioSD | Gen0    | Gen1   | Allocated | Alloc Ratio |
 |------------------------- |------------- |---------:|----------:|---------:|------:|--------:|--------:|-------:|----------:|------------:|
-| ParseMessageAndGetValues | Local Net4.8 | 96.03 us |  5.445 us | 0.298 us |  1.83 |    0.01 | 40.5273 | 5.9814 | 249.26 KB |        1.18 |
-| ParseMessageAndGetValues | Local Net8   | 50.55 us | 21.651 us | 1.187 us |  0.96 |    0.02 | 12.2070 | 2.0142 | 187.36 KB |        0.89 |
-| ParseMessageAndGetValues | Nuget Net4.8 | 97.66 us | 38.600 us | 2.116 us |  1.86 |    0.05 | 44.4336 | 6.8359 | 273.48 KB |        1.30 |
-| ParseMessageAndGetValues | Nuget Net8   | 52.39 us |  6.528 us | 0.358 us |  1.00 |    0.00 | 13.7329 | 2.3193 | 211.17 KB |        1.00 |
+| ParseMessageAndGetValues | Local Net4.8 | 77.00 us |  1.445 us | 0.079 us |  1.56 |    0.01 | 34.6680 | 4.8828 | 213.45 KB |        1.01 |
+| ParseMessageAndGetValues | Local Net8   | 39.85 us | 25.689 us | 1.408 us |  0.81 |    0.03 | 10.1318 | 1.5259 | 155.77 KB |        0.74 |
+| ParseMessageAndGetValues | Nuget Net4.8 | 94.81 us |  9.418 us | 0.516 us |  1.92 |    0.02 | 44.4336 | 6.8359 | 273.47 KB |        1.30 |
+| ParseMessageAndGetValues | Nuget Net8   | 49.49 us |  6.800 us | 0.373 us |  1.00 |    0.00 | 13.7329 | 2.2583 | 211.17 KB |        1.00 |
  */
 
         private readonly string _sampleMessage = File.ReadAllText("Sample-Orm.txt");

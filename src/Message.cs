@@ -19,6 +19,8 @@ namespace HL7.Dotnetcore
         public int SegmentCount { get; set; }
         public HL7Encoding Encoding { get; set; } = new HL7Encoding();
 
+        private static char _queryDelimiter =  '.';
+
         private const string segmentRegex = @"^([A-Z][A-Z][A-Z1-9])([\(\[]([0-9]+)[\)\]]){0,1}$";
         private const string fieldRegex = @"^([0-9]+)([\(\[]([0-9]+)[\)\]]){0,1}$";
         private const string otherRegEx = @"^[1-9]([0-9]{1,2})?$";
@@ -72,7 +74,7 @@ namespace HL7.Dotnetcore
             }
             catch (HL7Exception ex)
             {
-                throw ex;
+                throw;
             }
             catch (Exception ex)
             {
@@ -221,10 +223,11 @@ namespace HL7.Dotnetcore
             int componentIndex = 0;
             int subComponentIndex = 0;
             string strValue = string.Empty;
-            
-            List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
-            int comCount = allComponents.Count;
+
+            var allComponents = MessageHelper.SplitString(strValueFormat, _queryDelimiter);
+            int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
+
 
             if (isValid)
             {
@@ -323,7 +326,7 @@ namespace HL7.Dotnetcore
             string segmentName = string.Empty;
             int componentIndex = 0;
             int subComponentIndex = 0;
-            List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
+            var allComponents = MessageHelper.SplitString(strValueFormat, _queryDelimiter);
             int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
 
@@ -404,7 +407,7 @@ namespace HL7.Dotnetcore
         {
             bool isComponentized = false;
             string segmentName = string.Empty;
-            List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
+            var allComponents = MessageHelper.SplitString(strValueFormat, _queryDelimiter);
             int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
 
@@ -481,7 +484,7 @@ namespace HL7.Dotnetcore
             bool isSubComponentized = false;
             string segmentName = string.Empty;
             int componentIndex = 0;
-            List<string> allComponents = MessageHelper.SplitString(strValueFormat, _queryDelim);
+            var allComponents = MessageHelper.SplitString(strValueFormat, _queryDelimiter);
             int comCount = allComponents.Length;
             bool isValid = ValidateValueFormat(allComponents);
 
@@ -792,7 +795,7 @@ namespace HL7.Dotnetcore
 
                         string segmentName = strSegment.Substring(0, 3);
                         bool isValidSegmentName = System.Text.RegularExpressions.Regex.IsMatch(segmentName, segmentRegex);
-
+                        
                         if (!isValidSegmentName)
                             throw new HL7Exception("Invalid segment name found: " + strSegment, HL7Exception.BAD_MESSAGE);
 
@@ -836,9 +839,7 @@ namespace HL7.Dotnetcore
                                 throw new HL7Exception("Message Type & Trigger Event value not found in message", HL7Exception.UNSUPPORTED_MESSAGE_TYPE);
                         }
                         else
-                        {
                             throw new HL7Exception("MSH.9 not available", HL7Exception.UNSUPPORTED_MESSAGE_TYPE);
-                        }
                     }
                     catch (System.IndexOutOfRangeException e)
                     {
@@ -936,6 +937,7 @@ namespace HL7.Dotnetcore
 
             if (allComponents.Length > 0)
             {
+
                 if (Regex.IsMatch(allComponents[0], segmentRegex))
                 {
                     for (int i = 1; i < allComponents.Length; i++)
@@ -946,6 +948,7 @@ namespace HL7.Dotnetcore
                             isValid = true;
                         else
                             return false;
+
                     }
                 }
                 else

@@ -29,11 +29,7 @@ namespace HL7.Dotnetcore
             string[] allSubComponents;
             
             if (this.isDelimiter)
-#if NET8_0_OR_GREATER
-                allSubComponents = [Value];
-#else
                 allSubComponents = new [] {Value};
-#endif
 
             else
                 allSubComponents = MessageHelper.SplitString(_value, this.Encoding.SubComponentDelimiter);

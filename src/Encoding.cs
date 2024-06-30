@@ -36,12 +36,12 @@ namespace HL7.Dotnetcore
                 this.SubComponentDelimiter = delimiters[4];
             }
         }
-        
-        private static readonly string[] _delimiters = { "\r\n", "\n\r", "\r", "\n" };
-        
+
+
+        private static readonly string[] _segmentDelimiters = new string[] { "\r\n", "\n\r", "\r", "\n" };
         public void EvaluateSegmentDelimiter(string message)
         {
-            foreach (var delim in _delimiters)
+            foreach (var delim in _segmentDelimiters)
             {
                 if (message.Contains(delim))
                 {
@@ -98,9 +98,7 @@ namespace HL7.Dotnetcore
                         i += 3; // +1 in loop
                     }
                     else
-                    {
                         continueEncoding = true;
-                    }
                 }
 
                 if (continueEncoding)
@@ -139,7 +137,7 @@ namespace HL7.Dotnetcore
                     {
                         string v = string.Format("{0:X2}", (int)c);
 
-                        if ((v.Length % 2) != 0) // make number of digits even, this test would only be needed for values > 0xFF
+                        if (v.Length % 2 != 0) // make number of digits even, this test would only be needed for values > 0xFF
                             v = "0" + v;
 
                         sb.Append(this.EscapeCharacter);

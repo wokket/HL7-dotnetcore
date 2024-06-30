@@ -82,10 +82,8 @@ namespace HL7.Dotnetcore
             this.Encoding = encoding;
         }
 
-        public Field(string value, HL7Encoding encoding)
+        public Field(string value, HL7Encoding encoding) : this(encoding)
         {
-            this.ComponentList = new ComponentCollection();
-            this.Encoding = encoding;
             this.Value = value;
         }
 
