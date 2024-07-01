@@ -70,9 +70,9 @@ namespace HL7.Dotnetcore
                 else
                     isValid = true;
             }
-            catch (HL7Exception ex)
+            catch (HL7Exception)
             {
-                throw ex;
+                throw;
             }
             catch (Exception ex)
             {
