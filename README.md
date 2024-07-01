@@ -2,9 +2,21 @@
 
 [![NuGet](https://img.shields.io/nuget/v/HL7-dotnetcore.svg)](https://www.nuget.org/packages/HL7-dotnetcore/)
 [![github](https://img.shields.io/github/stars/Efferent-Health/HL7-dotnetcore.svg)]()
-[![Build Status](https://efferent.visualstudio.com/open-source/_apis/build/status/Efferent-Health.HL7-dotnetcore?branchName=master)](https://efferent.visualstudio.com/open-source/_build/latest?definitionId=8&branchName=master)
+![build](https://github.com/Efferent-Health/HL7-dotnetcore/workflows/main/badge.svg?branch=master)
 
-This is a lightweight library for building and parsing HL7 2.x messages, for .Net Standard and .Net Core. It is not tied to any particular version of HL7 nor validates against one. 
+This is a lightweight library for building and parsing HL7 2.x messages, for .NET Standard, .NET Core, and .NET 5+. It is not tied to any particular version of HL7 nor validates against one. 
+
+## Usage and compatibility
+
+This library is distributed via [nuget](https://www.nuget.org/packages/HL7-dotnetcore/latest) and targets two framworks:
+- .NET Standard 2.0 for maximum compability, covering more than 40 .NET frameworks
+- .NET 8.0 for better performance under the new Microsoft's cross-platform framework
+
+For using the classes and methods mentioned below, declare de following namespace:
+
+````cs
+using HL7.Dotnetcore;
+````
 
 ## Object construction
 
@@ -432,3 +444,5 @@ Since version 2.9, the MSH segment will have an extra field at the beginning of 
 Since version 2.9, some previously deprecated methods starting with lowercase have been removed. The replacement methods starting with uppercase shall be used instead.
 
 Since version 2.21, message.GetValue() will decode the returned content. In version 2.33, it was homologated with the Value property.
+
+Since version 2.39, the nuget package targets .NET 8.0, along with the long-supported .NET Standard 2.0.
