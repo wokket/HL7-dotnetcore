@@ -68,7 +68,7 @@ namespace HL7.Dotnetcore
             try
             {
                 if (!bypassValidation)
-                    isValid = this.validateMessage();
+                    isValid = this.ValidateMessage();
                 else
                     isValid = true;
             }
@@ -144,12 +144,12 @@ namespace HL7.Dotnetcore
         /// <returns>string with HL7 message</returns>
         public string SerializeMessage(bool validate)
         {
-            if (validate && !this.validateMessage())
+            if (validate && !this.ValidateMessage())
                 throw new HL7Exception("Failed to validate the updated message", HL7Exception.BAD_MESSAGE);
 
             var strMessage = new StringBuilder();
             string currentSegName = string.Empty;
-            List<Segment> _segListOrdered = getAllSegmentsInOrder();
+            List<Segment> _segListOrdered = GetAllSegmentsInOrder();
 
             try
             {
@@ -185,11 +185,11 @@ namespace HL7.Dotnetcore
                                     if (j > 0)
                                         strMessage.Append(Encoding.RepeatDelimiter);
 
-                                    serializeField(field.RepetitionList[j], strMessage);
+                                    SerializeField(field.RepetitionList[j], strMessage);
                                 }
                             }
                             else
-                                serializeField(field, strMessage);
+                                SerializeField(field, strMessage);
                         }
                         
                         strMessage.Append(Encoding.SegmentDelimiter);
@@ -212,7 +212,7 @@ namespace HL7.Dotnetcore
         }
 
         /// <summary>
-        /// Get the Value of specific Field/Component/SubCpomponent, throws error if field/component index is not valid
+        /// Get the Value of specific Field/Component/SubComponent, throws error if field/component index is not valid
         /// </summary>
         /// <param name="strValueFormat">Field/Component position in format SEGMENTNAME.FieldIndex.ComponentIndex.SubComponentIndex example PID.5.2</param>
         /// <returns>Value of specified field/component/subcomponent</returns>
@@ -255,7 +255,7 @@ namespace HL7.Dotnetcore
 
                         try
                         {
-                            var field = this.getField(segment, allComponents[1]);
+                            var field = this.GetField(segment, allComponents[1]);
                             strValue = field.ComponentList[componentIndex - 1].SubComponentList[subComponentIndex - 1].Value;
                         }
                         catch (Exception ex)
@@ -269,7 +269,7 @@ namespace HL7.Dotnetcore
 
                         try
                         {
-                            var field = this.getField(segment, allComponents[1]);
+                            var field = this.GetField(segment, allComponents[1]);
                             strValue = field.ComponentList[componentIndex - 1].Value;
                         }
                         catch (Exception ex)
@@ -281,7 +281,7 @@ namespace HL7.Dotnetcore
                     {
                         try
                         {
-                            var field = this.getField(segment, allComponents[1]);
+                            var field = this.GetField(segment, allComponents[1]);
                             strValue = field.Value;
                         }
                         catch (Exception ex)
@@ -345,7 +345,7 @@ namespace HL7.Dotnetcore
 
                             try
                             {
-                                var field = this.getField(segment, allComponents[1]);
+                                var field = this.GetField(segment, allComponents[1]);
                                 field.ComponentList[componentIndex - 1].SubComponentList[subComponentIndex - 1].Value = strValue;
                                 isSet = true;
                             }
@@ -360,7 +360,7 @@ namespace HL7.Dotnetcore
 
                             try
                             {
-                                var field = this.getField(segment, allComponents[1]);
+                                var field = this.GetField(segment, allComponents[1]);
                                 field.ComponentList[componentIndex - 1].Value = strValue;
                                 isSet = true;
                             }
@@ -373,7 +373,7 @@ namespace HL7.Dotnetcore
                         {
                             try
                             {
-                                var field = this.getField(segment, allComponents[1]);
+                                var field = this.GetField(segment, allComponents[1]);
                                 field.Value = strValue;
                                 isSet = true;
                             }
@@ -420,7 +420,7 @@ namespace HL7.Dotnetcore
                     try
                     {
                         var segment = SegmentList[segmentName].First();
-                        var field = this.getField(segment, allComponents[1]);
+                        var field = this.GetField(segment, allComponents[1]);
 
                         isComponentized = field.IsComponentized;
                     }
@@ -438,7 +438,7 @@ namespace HL7.Dotnetcore
             return isComponentized;
         }
 
-        private static char[] _queryDelim = { '.' };
+        private static readonly char[] _queryDelim = { '.' };
         /// <summary>
         /// Checks if specified fields has repetitions
         /// </summary>
@@ -459,7 +459,7 @@ namespace HL7.Dotnetcore
                 {
                     try
                     {
-                        var count = this.getFieldRepetitions(segment, allComponents[1]);
+                        var count = this.GetFieldRepetitions(segment, allComponents[1]);
                         return count > 1;
                     }
                     catch (Exception ex)
@@ -497,7 +497,7 @@ namespace HL7.Dotnetcore
                     try
                     {
                         var segment = SegmentList[segmentName].First();
-                        var field = this.getField(segment, allComponents[1]);
+                        var field = this.GetField(segment, allComponents[1]);
 
                         Int32.TryParse(allComponents[2], out componentIndex);
                         isSubComponentized = field.ComponentList[componentIndex - 1].IsSubComponentized;
@@ -523,7 +523,7 @@ namespace HL7.Dotnetcore
         /// <returns>An ACK message if success, otherwise null</returns>
         public Message GetACK(bool bypassValidation = false)
         {
-            return this.createAckMessage("AA", false, null, bypassValidation);
+            return this.CreateAckMessage("AA", false, null, bypassValidation);
         }
 
         /// <summary>
@@ -535,7 +535,7 @@ namespace HL7.Dotnetcore
         /// <returns>A NACK message if success, otherwise null</returns>
         public Message GetNACK(string code, string errMsg, bool bypassValidation = false)
         {
-            return this.createAckMessage(code, true, errMsg, bypassValidation);
+            return this.CreateAckMessage(code, true, errMsg, bypassValidation);
         }
 
         /// <summary>
@@ -593,17 +593,17 @@ namespace HL7.Dotnetcore
 
         public List<Segment> Segments()
         {
-            return getAllSegmentsInOrder();
+            return GetAllSegmentsInOrder();
         }
 
         public List<Segment> Segments(string segmentName)
         {
-            return getAllSegmentsInOrder().FindAll(o=> o.Name.Equals(segmentName));
+            return GetAllSegmentsInOrder().FindAll(o=> o.Name.Equals(segmentName));
         }
 
         public Segment DefaultSegment(string segmentName)
         {
-            return getAllSegmentsInOrder().First(o => o.Name.Equals(segmentName));
+            return GetAllSegmentsInOrder().First(o => o.Name.Equals(segmentName));
         }
 
         /// <summary>
@@ -661,7 +661,7 @@ namespace HL7.Dotnetcore
         /// <param name="errMsg">error message to be sent with NACK</param>
         /// <param name="bypassValidation">Bypasses validation of the resulting ACK/NACK message</param>
         /// <returns>An ACK or NACK message if success, otherwise null</returns>
-        private Message createAckMessage(string code, bool isNack, string errMsg, bool bypassValidation)
+        private Message CreateAckMessage(string code, bool isNack, string errMsg, bool bypassValidation)
         {
             var response = new StringBuilder();
 
@@ -709,10 +709,10 @@ namespace HL7.Dotnetcore
         /// <summary>
         /// Gets a field object within a segment by index
         /// </summary>
-        /// <param name="segment">The segment object to search in/param>
-        /// <param name="index">The index of the field within the segment/param>
+        /// <param name="segment">The segment object to search in</param>
+        /// <param name="index">The index of the field within the segment</param>
         /// <returns>A Field object</returns>
-        private Field getField(Segment segment, string index)
+        private Field GetField(Segment segment, string index)
         {
             int repetition = 0;
             var matches = System.Text.RegularExpressions.Regex.Matches(index, fieldRegex);
@@ -742,10 +742,10 @@ namespace HL7.Dotnetcore
         /// <summary>
         /// Determines if a segment field has repetitions
         /// </summary>
-        /// <param name="segment">The segment object to search in/param>
-        /// <param name="index">The index of the field within the segment/param>
+        /// <param name="segment">The segment object to search in</param>
+        /// <param name="index">The index of the field within the segment</param>
         /// <returns>A boolean indicating whether the field has repetitions</returns>
-        private int getFieldRepetitions(Segment segment, string index)
+        private int GetFieldRepetitions(Segment segment, string index)
         {
             var matches = System.Text.RegularExpressions.Regex.Matches(index, fieldRegex);
 
@@ -767,7 +767,7 @@ namespace HL7.Dotnetcore
         /// Validates the HL7 message for basic syntax
         /// </summary>
         /// <returns>A boolean indicating whether the whole message is valid or not</returns>
-        private bool validateMessage()
+        private bool ValidateMessage()
         {
             try
             {
@@ -782,11 +782,11 @@ namespace HL7.Dotnetcore
                         throw new HL7Exception("MSH segment not found at the beginning of the message", HL7Exception.BAD_MESSAGE);
 
                     this.Encoding.EvaluateSegmentDelimiter(this.HL7Message);
-                    this.HL7Message = string.Join(this.Encoding.SegmentDelimiter, MessageHelper.SplitMessage(this.HL7Message)) + this.Encoding.SegmentDelimiter;
+                    this.allSegments = MessageHelper.SplitMessage(HL7Message);
+                    this.HL7Message = string.Join(Encoding.SegmentDelimiter, allSegments) + Encoding.SegmentDelimiter;
 
                     // Check Segment Name & 4th character of each segment
                     char fourthCharMSH = HL7Message[3];
-                    this.allSegments = MessageHelper.SplitMessage(HL7Message);
 
                     foreach (string strSegment in this.allSegments)
                     {
@@ -885,7 +885,7 @@ namespace HL7.Dotnetcore
         /// Serializes a field into a string with proper encoding
         /// </summary>
         /// <returns>A serialized string</returns>
-        private void serializeField(Field field, StringBuilder strMessage)
+        private void SerializeField(Field field, StringBuilder strMessage)
         {
             if (field.ComponentList.Count > 0)
             {
@@ -912,7 +912,7 @@ namespace HL7.Dotnetcore
         /// Get all segments in order as they appear in original message. This the usual order: IN1|1 IN2|1 IN1|2 IN2|2
         /// </summary>
         /// <returns>A list of segments in the proper order</returns>
-        private List<Segment> getAllSegmentsInOrder()
+        private List<Segment> GetAllSegmentsInOrder()
         {
             List<Segment> list = new List<Segment>();
 
@@ -950,10 +950,6 @@ namespace HL7.Dotnetcore
                             return false;
 
                     }
-                }
-                else
-                {
-                    isValid = false;
                 }
             }
 

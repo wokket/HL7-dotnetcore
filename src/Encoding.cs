@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -15,12 +16,23 @@ namespace HL7.Dotnetcore
         public string PresentButNull { get; set; } = "\"\"";   // ""
         public string AllDelimiters => "" + FieldDelimiter + ComponentDelimiter + RepeatDelimiter + (EscapeCharacter == (char)0 ? "" : EscapeCharacter.ToString()) + SubComponentDelimiter;
 
+        private static readonly string[] _segmentDelimiters = new string[] { "\r\n", "\n\r", "\r", "\n" };
+
+        private char[] _charsThatMightNeedEncoding;
+        
+        
         public HL7Encoding()
         {
+            // set the defaults
+            _charsThatMightNeedEncoding = new[] { '<', FieldDelimiter, ComponentDelimiter, RepeatDelimiter, EscapeCharacter, SubComponentDelimiter };
         }
 
         public void EvaluateDelimiters(string delimiters)
         {
+            var charsThatMightNeedEncoding = new List<char>(6) { 
+                '<' // <br> etc
+            };
+
             this.FieldDelimiter = delimiters[0];
             this.ComponentDelimiter = delimiters[1];
             this.RepeatDelimiter = delimiters[2];
@@ -35,10 +47,16 @@ namespace HL7.Dotnetcore
                 this.EscapeCharacter = delimiters[3];
                 this.SubComponentDelimiter = delimiters[4];
             }
+
+            charsThatMightNeedEncoding.Add(EscapeCharacter);
+            charsThatMightNeedEncoding.Add(FieldDelimiter);
+            charsThatMightNeedEncoding.Add(ComponentDelimiter);
+            charsThatMightNeedEncoding.Add(RepeatDelimiter);
+            charsThatMightNeedEncoding.Add(SubComponentDelimiter);
+
+            _charsThatMightNeedEncoding = charsThatMightNeedEncoding.ToArray();
         }
-
-
-        private static readonly string[] _segmentDelimiters = new string[] { "\r\n", "\n\r", "\r", "\n" };
+        
         public void EvaluateSegmentDelimiter(string message)
         {
             foreach (var delim in _segmentDelimiters)
@@ -63,6 +81,9 @@ namespace HL7.Dotnetcore
             if (string.IsNullOrWhiteSpace(val))
                 return val;
 
+            if (val.IndexOfAny(_charsThatMightNeedEncoding) < 0)
+                return val;
+
             var sb = new StringBuilder();
 
             for (int i = 0; i < val.Length; i++)
@@ -77,7 +98,7 @@ namespace HL7.Dotnetcore
                     if (val.Length >= i + 3 && val[i + 1] == 'B' && val[i + 2] == '>')
                     {
                         sb.Append(this.EscapeCharacter);
-                        sb.Append("H");
+                        sb.Append('H');
                         sb.Append(this.EscapeCharacter);
                         i += 2; // +1 in loop
                     }
@@ -85,7 +106,7 @@ namespace HL7.Dotnetcore
                     else if (val.Length >= i + 4 && val[i + 1] == '/' && val[i + 2] == 'B' && val[i + 3] == '>')
                     {
                         sb.Append(this.EscapeCharacter);
-                        sb.Append("N");
+                        sb.Append('N');
                         sb.Append(this.EscapeCharacter);
                         i += 3; // +1 in loop
                     }
@@ -106,31 +127,31 @@ namespace HL7.Dotnetcore
                     if (c == this.ComponentDelimiter)
                     {
                         sb.Append(this.EscapeCharacter);
-                        sb.Append("S");
+                        sb.Append('S');
                         sb.Append(this.EscapeCharacter);
                     }
                     else if (c == this.EscapeCharacter)
                     {
                         sb.Append(this.EscapeCharacter);
-                        sb.Append("E");
+                        sb.Append('E');
                         sb.Append(this.EscapeCharacter);
                     }
                     else if (c == this.FieldDelimiter)
                     {
                         sb.Append(this.EscapeCharacter);
-                        sb.Append("F");
+                        sb.Append('F');
                         sb.Append(this.EscapeCharacter);
                     }
                     else if (c == this.RepeatDelimiter)
                     {
                         sb.Append(this.EscapeCharacter);
-                        sb.Append("R");
+                        sb.Append('R');
                         sb.Append(this.EscapeCharacter);
                     }
                     else if (c == this.SubComponentDelimiter)
                     {
                         sb.Append(this.EscapeCharacter);
-                        sb.Append("T");
+                        sb.Append('T');
                         sb.Append(this.EscapeCharacter);
                     }
                     else if (c == 10 || c == 13) // All other non-visible characters will be preserved
@@ -141,7 +162,7 @@ namespace HL7.Dotnetcore
                             v = "0" + v;
 
                         sb.Append(this.EscapeCharacter);
-                        sb.Append("X");
+                        sb.Append('X');
                         sb.Append(v);
                         sb.Append(this.EscapeCharacter);
                     }
