@@ -6,7 +6,7 @@ namespace HL7.Dotnetcore
 {
     public class Field : MessageElement
     {
-        private List<Field> _RepetitionList;
+        private List<Field> _repetitionList;
 
         internal ComponentCollection ComponentList { get; set; }
 
@@ -18,14 +18,14 @@ namespace HL7.Dotnetcore
         {
             get
             {
-                if (_RepetitionList == null)
-                    _RepetitionList = new List<Field>();
+                if (_repetitionList == null)
+                    _repetitionList = new List<Field>();
 
-                return _RepetitionList;
+                return _repetitionList;
             }
             set
             {
-                _RepetitionList = value;
+                _repetitionList = value;
             }
         }
 
@@ -49,12 +49,12 @@ namespace HL7.Dotnetcore
             if (this.HasRepetitions)
             {
                 var individualFields = MessageHelper.SplitString(_value, this.Encoding.RepeatDelimiter);
-                _RepetitionList = new List<Field>(individualFields.Length);
+                _repetitionList = new List<Field>(individualFields.Length);
 
                 foreach (var individualField in individualFields)
                 {
                     Field field = new Field(individualField, Encoding);
-                    _RepetitionList.Add(field);
+                    _repetitionList.Add(field);
                 }
             }
             else
@@ -172,10 +172,10 @@ namespace HL7.Dotnetcore
             if (!this.HasRepetitions) 
                 throw new HL7Exception("Repeating field must have repetitions (HasRepetitions = true)");
 
-            if (_RepetitionList == null) 
-                _RepetitionList = new List<Field>(); 
+            if (_repetitionList == null) 
+                _repetitionList = new List<Field>(); 
 
-            _RepetitionList.Add(field);
+            _repetitionList.Add(field);
         }
     }
 }

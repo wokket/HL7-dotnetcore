@@ -14,17 +14,17 @@ namespace Benchmarks
     /// </summary>
     [Config(typeof(Config))]
     [MemoryDiagnoser]
-    [HideColumns("BuildConfiguration", "NuGetReferences", "Runtime")]
+    [HideColumns("BuildConfiguration", "Error", "StdDev", "RatioSD")]
     public class ParseMessageBench
     {
 
 /*
-| Method                   | Job          | Mean     | Error     | StdDev   | Ratio | RatioSD | Gen0    | Gen1   | Allocated | Alloc Ratio |
-|------------------------- |------------- |---------:|----------:|---------:|------:|--------:|--------:|-------:|----------:|------------:|
-| ParseMessageAndGetValues | Local Net4.8 | 74.06 us |  2.817 us | 0.154 us |  1.51 |    0.01 | 32.8369 | 4.6387 | 202.32 KB |        0.96 |
-| ParseMessageAndGetValues | Local Net8   | 39.56 us | 28.321 us | 1.552 us |  0.81 |    0.04 |  9.4604 | 1.4038 | 145.75 KB |        0.69 |
-| ParseMessageAndGetValues | Nuget Net4.8 | 96.68 us |  6.802 us | 0.373 us |  1.97 |    0.01 | 44.4336 | 6.7139 | 273.47 KB |        1.30 |
-| ParseMessageAndGetValues | Nuget Net8   | 49.12 us |  6.488 us | 0.356 us |  1.00 |    0.00 | 13.7329 | 2.3193 | 211.17 KB |        1.00 |
+| Method                   | Job          | Runtime            | NuGetReferences     | Mean     | Ratio | Gen0    | Gen1   | Allocated | Alloc Ratio |
+|------------------------- |------------- |------------------- |-------------------- |---------:|------:|--------:|-------:|----------:|------------:|
+| ParseMessageAndGetValues | Net4.8 Local | .NET Framework 4.8 | Default             | 75.32 us |  1.64 | 32.5928 | 4.3945 | 200.57 KB |        1.11 |
+| ParseMessageAndGetValues | Net4.8 Nuget | .NET Framework 4.8 | HL7-dotnetcore 2.39 | 96.53 us |  2.10 | 40.5273 | 5.9814 | 249.26 KB |        1.38 |
+| ParseMessageAndGetValues | Net8 Local   | .NET 8.0           | Default             | 37.77 us |  0.82 |  9.3994 | 1.3428 | 144.08 KB |        0.80 |
+| ParseMessageAndGetValues | Net8 Nuget   | .NET 8.0           | HL7-dotnetcore 2.39 | 45.97 us |  1.00 | 11.7798 | 1.9531 |  180.7 KB |        1.00 |
  */
 
         private readonly string _sampleMessage = File.ReadAllText("Sample-Orm.txt");
@@ -35,14 +35,15 @@ namespace Benchmarks
             {
                 var baseJob = Job.ShortRun;
 
-                AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.1").WithRuntime(CoreRuntime.Core80).WithId("Nuget Net8").AsBaseline());
-                AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.37.1").WithRuntime(ClrRuntime.Net48).WithId("Nuget Net4.8"));
-
+                AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.39").WithRuntime(CoreRuntime.Core80).WithId("Net8 Nuget").AsBaseline());
+                AddJob(baseJob.WithNuGet("HL7-dotnetcore", "2.39").WithRuntime(ClrRuntime.Net48).WithId("Net4.8 Nuget"));
+                
                 AddJob(baseJob.WithRuntime(ClrRuntime.Net48).WithCustomBuildConfiguration("LOCAL_CODE")
-                    .WithId("Local Net4.8")); // custom config to include/exclude nuget reference or target project reference locally
-
+                    .WithId("Net4.8 Local")); // custom config to include/exclude nuget reference or target project reference locally
+                
                 AddJob(baseJob.WithRuntime(CoreRuntime.Core80).WithCustomBuildConfiguration("LOCAL_CODE")
-                    .WithId("Local Net8")); // custom config to include/exclude nuget reference or target project reference locally
+                    .WithId("Net8 Local")); // custom config to include/exclude nuget reference or target project reference locally
+
             }
         }
 

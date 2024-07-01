@@ -26,29 +26,29 @@ namespace HL7.Dotnetcore
 
         protected override void ProcessValue()
         {
-            var allFields = MessageHelper.SplitString(_value, this.Encoding.FieldDelimiter).ToList();
+            var allFields = MessageHelper.SplitString(_value, this.Encoding.FieldDelimiter);
 
-            allFields.RemoveAt(0);
-            
-            for (int i = 0; i < allFields.Count; i++)
+            for (int i = 1; i < allFields.Length; i++)
             {
                 string strField = allFields[i];
                 Field field = new Field(this.Encoding);   
 
-                if (Name == "MSH" && i == 0)
+                if (string.Equals(Name, "MSH", StringComparison.Ordinal) && i == 1)
                     field.IsDelimitersField = true; // special case
 
                 field.Value = strField;
                 this.FieldList.Add(field);
             }
 
-            if (this.Name == "MSH")
+            if (string.Equals(this.Name, "MSH", StringComparison.Ordinal))
             {
-                var field1 = new Field(this.Encoding);
-                field1.IsDelimitersField = true;
-                field1.Value = this.Encoding.FieldDelimiter.ToString();
+                var field1 = new Field(this.Encoding)
+                {
+                    IsDelimitersField = true,
+                    Value = this.Encoding.FieldDelimiter.ToString()
+                };
 
-                this.FieldList.Insert(0,field1);
+                this.FieldList.Insert(0, field1);
             }
         }
 
