@@ -9,7 +9,7 @@ namespace HL7.Dotnetcore
 {
     public static class MessageHelper
     {
-        private static string[] lineSeparators = { "\r\n", "\n\r", "\r", "\n" };
+        private static readonly string[] lineSeparators = { "\r\n", "\n\r", "\r", "\n" };
 
         public static List<string> SplitString(string strStringToSplit, string splitBy, StringSplitOptions splitOptions = StringSplitOptions.None)
         {
@@ -43,7 +43,9 @@ namespace HL7.Dotnetcore
             var list = new List<string>();
 
             foreach (Match m in matches)
+            {
                 list.Add(m.Groups[1].Value);
+            }
 
             return list.ToArray();
         }
