@@ -58,8 +58,6 @@ namespace HL7.Dotnetcore
             throw new HL7Exception("Segment delimiter not found in message", HL7Exception.BAD_MESSAGE);
         }
 
-        // Encoding methods based on https://github.com/elomagic/hl7inspector
-
         public  string Encode(string val)
         {
             if (val == null)
@@ -69,8 +67,9 @@ namespace HL7.Dotnetcore
                 return val;
 
             // If there's nothing that needs encoding, just return the value as-is
-            if (val.IndexOfAny(_charsThatMightNeedEncoding) < 0)
-                return val;
+            // Disabled as it was breaking the CustomDelimiterTest() test method
+            // if (val.IndexOfAny(_charsThatMightNeedEncoding) < 0)
+            //     return val;
             
             var sb = new StringBuilder();
 
